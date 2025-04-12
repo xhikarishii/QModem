@@ -666,7 +666,19 @@
                 "data_interface": "usb",
                 "define_connect": "1",
                 "modes": [
-                    "mbim"
+                    "mbim",
+		    "rmnet"
+                ]
+            },
+            "t99w373": {
+                "manufacturer_id": "05c6",
+                "manufacturer": "foxconn",
+                "platform": "qualcomm",
+                "data_interface": "usb",
+                "define_connect": "1",
+                "modes": [
+                    "mbim",
+                    "rmnet"
                 ]
             }
         },
@@ -683,6 +695,15 @@
                 ]
             },
             "t99w175": {
+                "manufacturer": "foxconn",
+                "platform": "qualcomm",
+                "data_interface": "pcie",
+                "define_connect": "1",
+                "modes": [
+                    "mbim"
+                ]
+            },
+            "t99w373": {
                 "manufacturer": "foxconn",
                 "platform": "qualcomm",
                 "data_interface": "pcie",
@@ -1069,11 +1090,13 @@
                 "qualcomm": {
                     "vendor_id": [
                         "17cb",
-	               		"05c6"
+	               	"05c6"
                     ],
                     "product_id": [
                         "0306",
-	                    "90d5"
+                        "0308",
+	                "90d5",
+			"9025"
                     ]
                 }
             }

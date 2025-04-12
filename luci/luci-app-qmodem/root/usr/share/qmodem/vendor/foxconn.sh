@@ -32,11 +32,35 @@ function set_imei(){
 }
 
 function get_mode(){
+    local mode_num
+    local mode
     cfg=$(at $at_port "AT^PCIEMODE?")
     config_type=`echo -e "$cfg" | grep -o '[0-9]'`
     if [ "$config_type" = "1" ]; then
-        mode="mbim"
+        mode="0"
+	json_add_int disable_mode_btn 0
+
+    else
+      	ucfg=$(at $at_port "AT+USBSWITCH?")
+      	config_type=$(echo "$ucfg" | grep USBSWITCH: |cut -d':' -f2|xargs)
+      	if [ "$config_type" = "9025" ]; then
+        	 mode_num="1"
+      	elif [ "$config_type" = "90D5" ]; then
+         	mode_num="0"
+        fi
     fi
+    case "$platform" in
+        "qualcomm")
+            case "$mode_num" in
+                "0") mode="mbim" ;;
+                "1") mode="rmnet" ;;
+                *) mode="${mode_num}" ;;
+            esac
+        ;;
+        *)
+            mode="${mode_num}"
+        ;;
+    esac
     available_modes=$(uci -q get qmodem.$config_section.modes)
     json_add_object "mode"
     for available_mode in $available_modes; do
@@ -47,8 +71,30 @@ function get_mode(){
         fi
     done
     json_close_object
+
 }
 
+set_mode(){
+    local mode=$1
+    case "$platform" in
+        "qualcomm")
+            case "$mode" in
+                "mbim") mode_num="90d5" ;;
+                "rmnet") mode_num="9025" ;;
+                *) mode="90d5" ;;
+            esac
+        ;;
+        *)
+            mode_num="90d5"
+        ;;
+    esac
+    #设置模组
+    at_command="AT+USBSWITCH=${mode_num}"
+    res=$(at "${at_port}" "${at_command}")
+    json_select "result"
+    json_add_string "set_mode" "$res"
+    json_close_object
+}
 
 function get_network_prefer(){
     res=$(at $at_port "AT^SLMODE?"| grep -o '[0-9]\+' | tr -d '\n' | tr -d ' ')

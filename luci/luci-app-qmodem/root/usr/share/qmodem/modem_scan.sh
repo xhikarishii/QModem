@@ -288,6 +288,9 @@ match_config()
 	[[ "$name" = *"mv31-w"* ]] && name="t99w175"
 
         [[ "$name" = *"T99W175"* ]] && name="t99w175"
+
+        [[ "$name" = *"T99W373"* ]] && name="t99w373"
+
 	#rg200u-cn
     [[ "$name" = *"rg200u-cn"* ]] && name="rg200u-cn"
 
