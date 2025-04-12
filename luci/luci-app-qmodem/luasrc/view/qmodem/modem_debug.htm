@@ -660,6 +660,13 @@
 				this.init_ele();
 			}
 
+			if (this.config.disable_mode_btn == 0 || this.config.disable_mode_btn == undefined) {
+				this.mode_btn.disabled = false;
+			}
+			else{
+				this.mode_btn.disabled = true;
+			}
+
 			for (let key in this.config.mode){
 				if (this.avalibale_mode.includes(key) == false)
 				{
