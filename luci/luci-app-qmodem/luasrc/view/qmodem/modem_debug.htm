@@ -27,7 +27,12 @@
 				"action": this.get_action
 			},
 				(x, data) => {
-					this.config = data[this.config_name];
+					if (this.config_name){
+						this.config = data[this.config_name];
+					}
+					else {
+						this.config = data;
+					}
 					if (this.cb_get) {
 						this.cb_get(data);
 					}
@@ -43,7 +48,12 @@
 				"params": JSON.stringify(config)
 			},
 				(x, data) => {
-					this.config = data[this.config_name];
+					if (this.config_name){
+						this.config = data[this.config_name];
+					}
+					else {
+						this.config = data;
+					}
 					if (this.cb_set) {
 						this.cb_set(data);
 					}
@@ -627,7 +637,7 @@
 	class DialMode extends ModemConfig {
 		constructor(cfg_id){
 			super(cfg_id,"<%:Dial Mode%>");
-			this.config_name = "mode";
+			this.config_name = "";
 			this.get_action = "get_mode";
 			this.set_action = "set_mode";
 			this.avalibale_mode = [];
@@ -650,12 +660,12 @@
 				this.init_ele();
 			}
 
-			for (let key in this.config){
+			for (let key in this.config.mode){
 				if (this.avalibale_mode.includes(key) == false)
 				{
 					this.avalibale_mode.push(key);
 				}
-				if (this.config[key] == 1) {
+				if (this.config.mode[key] == 1) {
 					this.selected_mode = key;
 					this.td_map.current_mode.innerHTML = key;
 				}
