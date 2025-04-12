@@ -259,7 +259,7 @@ function network_info() {
 }
 
 function vendor_get_disabled_features(){
-    #json_add_string "" "IMEI"
+    json_add_string "" "IMEI"
     json_add_string "" "NeighborCell"
 }
 
