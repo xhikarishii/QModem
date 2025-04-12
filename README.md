@@ -1,5 +1,8 @@
 # QModem
 
+以前我在github上抄代码，作者跟我说点个star，我都会说好好好，但是编译完了刷机后也没想起来点star，其实这样挺不好的。
+现在作者跟我说点个star，除非代码真的很好到我想打好评的程度，否则我就会在issue直接说，抱歉我不想star，然后直接抄。作为一个有讨好倾向的人，这就是我锻炼真诚和勇气的方式
+
 [English](README.en.md)
 
 这是一个模组管理插件，兼容 Openwrt 21及之后的版本，使用 lua 开发，因此同时兼容 QWRT/LEDE/Immortalwrt/Openwrt
