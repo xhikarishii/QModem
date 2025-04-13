@@ -278,8 +278,8 @@ sim_info()
     # fi
 
     #SIM Number（SIM卡号码，手机号）
-    at_command="AT+CSCA?"
-	sim_number=$(at $at_port $at_command | sed -n '2p' | awk -F'"' '{print $2}')
+    at_command="AT+CNUM"
+	sim_number=$(at $at_port $at_command | sed -n '2p' | awk -F'"' '{print $4}')
 
     #IMSI（国际移动用户识别码）
     at_command="AT+CIMI"
