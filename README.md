@@ -55,7 +55,7 @@ make menuconfig
 | **Add Qfirehose SUPPORT**             |                                                                                             添加 Qfirehose 支持，用于高通芯片模组固件升级                                                                                             |
 | **luci-app-qmodem-hc**                |                                                                                              支持 hc-g80 SIM 卡切换，该插件为设备专属插件                                                                                              |
 | **luci-app-qmodem-mwan**              |                                                                                                           支持多 WAN 设置。                                                                                                           |
-| **luci-app-qmodem-sms**               |                                                                                                              短信首发功能                                                                                                              |
+| **luci-app-qmodem-sms**               |                                                                                                              短信收发功能                                                                                                              |
 | **luci-app-qmodem-ttl**               |                                                                                                              TTL 重写功能                                                                                                              |
 
 # 项目介绍
