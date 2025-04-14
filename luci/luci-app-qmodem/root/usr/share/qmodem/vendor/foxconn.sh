@@ -1,4 +1,5 @@
 #!/bin/sh
+# Copyright (C) 2025 x-shark
 
 source /usr/share/qmodem/generic.sh
 debug_subject="quectel_ctrl"
@@ -37,8 +38,8 @@ function get_mode(){
     cfg=$(at $at_port "AT^PCIEMODE?")
     config_type=`echo -e "$cfg" | grep -o '[0-9]'`
     if [ "$config_type" = "1" ]; then
-        mode="0"
-	json_add_int disable_mode_btn 0
+        mode_num="0"
+	json_add_int disable_mode_btn 1
 
     else
       	ucfg=$(at $at_port "AT+USBSWITCH?")
