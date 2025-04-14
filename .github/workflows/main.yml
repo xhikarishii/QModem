@@ -9,6 +9,8 @@ on:
     paths-ignore:
       - "docs/**"
       - "README.md"
+      - "README.en.md"
+      - ".github/workflows/**"
       - ".github/**"
 
 env:
@@ -190,6 +192,7 @@ jobs:
         if: ${{ needs.job_prepare.outputs.push_type == 'tag' }}
         with:
           body_path: release_note/release_note.md
+          generate_release_notes: true
           tag_name: ${{ needs.job_prepare.outputs.tag_name }}
           prerelease: ${{ contains(needs.job_prepare.outputs.tag_name, '-beta') || contains(needs.job_prepare.outputs.tag_name, '-rc') }}
           files: releases/*
