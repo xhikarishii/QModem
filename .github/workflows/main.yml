@@ -6,6 +6,10 @@ on:
       - 'v*'
     branches:
       - main
+    paths-ignore:
+      - "docs/**"
+      - "README.md"
+      - ".github/**"
 
 env:
   TZ: Asia/Shanghai
@@ -18,6 +22,7 @@ jobs:
       tag_name: ${{ env.tag_name }}
       push_type: ${{ env.push_type }}
       tag_message: ${{ env.tag_message }}
+      release_note_body: ${{ env.release_note_body }}
 
     steps:
       - name: Determine push type
@@ -45,6 +50,29 @@ jobs:
           TAG_MESSAGE=$(git tag -l --format='%(contents)' "${{ env.tag_name }}")
           echo "tag_message=${TAG_MESSAGE}" >> $GITHUB_ENV
 
+      - name: Update Modem_support_list
+        id: update_modem_support_list
+        run: |
+          cd qmodem
+          python3 ./scripts/update_support_list.py temp_support_list ./luci/luci-app-qmodem/root/usr/share/qmodem/modem_support.json
+          is_diff=$(diff ./temp_support_list.md ./support_list.md > /dev/null 2>&1 && echo 0 || echo 1)
+          echo "is_diff=${is_diff}" >> $GITHUB_ENV
+          if [[ ${is_diff} == 1 ]]; then
+            mv temp_support_list.md ./docs/support_list.md
+            git config --global user.name "GitHub Action"
+            git config --global user.email "github-action@users.noreply.github.com"
+            git add ./docs/support_list.md
+            git commit -m "Update support list"
+            git push origin ${{ env.branch_name }}
+          fi
+          mv temp_support_list_release_notes.md ./release_note.md
+      
+      - name: Upload Release Note
+        id: upload_release_note
+        uses: actions/upload-artifact@v4
+        with:
+          name: Release Note
+          path: ./release_note.md
 
   job_build_qmodem:
     name: Build QModem
@@ -164,7 +192,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: ${{ needs.job_prepare.outputs.push_type == 'tag' }}
         with:
-          body: ${{ needs.job_prepare.outputs.tag_message }}
+          body_path: releases/release_note.md
           tag_name: ${{ needs.job_prepare.outputs.tag_name }}
           prerelease: ${{ contains(needs.job_prepare.outputs.tag_name, '-beta') || contains(needs.job_prepare.outputs.tag_name, '-rc') }}
           files: releases/*
