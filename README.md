@@ -9,7 +9,7 @@
 
 (使用 js luci 时请添加 luci-compat 软件包)
 
-[支持模组列表](support_list.md)
+[支持模组列表](./docs/support_list.md)
 
 [toc]
 

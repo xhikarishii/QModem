@@ -22,7 +22,6 @@ jobs:
       tag_name: ${{ env.tag_name }}
       push_type: ${{ env.push_type }}
       tag_message: ${{ env.tag_message }}
-      release_note_body: ${{ env.release_note_body }}
 
     steps:
       - name: Determine push type
@@ -55,7 +54,7 @@ jobs:
         run: |
           cd qmodem
           python3 ./scripts/update_support_list.py temp_support_list ./luci/luci-app-qmodem/root/usr/share/qmodem/modem_support.json
-          is_diff=$(diff ./temp_support_list.md ./support_list.md > /dev/null 2>&1 && echo 0 || echo 1)
+          is_diff=$(diff ./temp_support_list.md ./docs/support_list.md > /dev/null 2>&1 && echo 0 || echo 1)
           echo "is_diff=${is_diff}" >> $GITHUB_ENV
           if [[ ${is_diff} == 1 ]]; then
             mv temp_support_list.md ./docs/support_list.md
