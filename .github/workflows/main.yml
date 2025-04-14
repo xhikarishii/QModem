@@ -42,7 +42,7 @@ jobs:
         id: get_tag_info
         run: |
           cd qmodem
-          TAG_MESSAGE=$(git for-each-ref refs/tags/${{ env.tag_name }} --format='%(contents)')
+          TAG_MESSAGE=$(git tag -l --format='%(contents)' "${{ env.tag_name }}")
           echo "tag_message=${TAG_MESSAGE}" >> $GITHUB_ENV
 
 
@@ -166,5 +166,5 @@ jobs:
         with:
           body: ${{ needs.job_prepare.outputs.tag_message }}
           tag_name: ${{ needs.job_prepare.outputs.tag_name }}
-          prerelease: ${{ needs.job_prepare.outputs.tag_name == '*-beta' || needs.job_prepare.outputs.tag_name == '*-rc' }}
+          prerelease: ${{ contains(needs.job_prepare.outputs.tag_name, '-beta') || contains(needs.job_prepare.outputs.tag_name, '-rc') }}
           files: releases/*
