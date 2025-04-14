@@ -173,7 +173,7 @@ jobs:
           name: Release Note
           path: release_note
 
-          - name: Create releases directory
+      - name: Create releases directory
         run: mkdir -p releases
 
       - name: Package artifacts into tar.gz
