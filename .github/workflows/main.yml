@@ -167,7 +167,13 @@ jobs:
         with:
           path: artifacts
         
-      - name: Create releases directory
+      - name: Download Release Note
+        uses: actions/download-artifact@v4
+        with:
+          name: Release Note
+          path: release_note
+
+          - name: Create releases directory
         run: mkdir -p releases
 
       - name: Package artifacts into tar.gz
@@ -183,7 +189,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: ${{ needs.job_prepare.outputs.push_type == 'tag' }}
         with:
-          body_path: releases/release_note.md
+          body_path: release_note/release_note.md
           tag_name: ${{ needs.job_prepare.outputs.tag_name }}
           prerelease: ${{ contains(needs.job_prepare.outputs.tag_name, '-beta') || contains(needs.job_prepare.outputs.tag_name, '-rc') }}
           files: releases/*
