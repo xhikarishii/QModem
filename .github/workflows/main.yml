@@ -21,7 +21,6 @@ jobs:
       branch_name: ${{ env.branch_name }}
       tag_name: ${{ env.tag_name }}
       push_type: ${{ env.push_type }}
-      tag_message: ${{ env.tag_message }}
 
     steps:
       - name: Determine push type
@@ -41,13 +40,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: 'qmodem'
-
-      - name: Get tag info
-        id: get_tag_info
-        run: |
-          cd qmodem
-          TAG_MESSAGE=$(git tag -l --format='%(contents)' "${{ env.tag_name }}")
-          echo "tag_message=${TAG_MESSAGE}" >> $GITHUB_ENV
 
       - name: Update Modem_support_list
         id: update_modem_support_list
@@ -71,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Release Note
-          path: ./release_note.md
+          path: ./qmodem/release_note.md
 
   job_build_qmodem:
     name: Build QModem
