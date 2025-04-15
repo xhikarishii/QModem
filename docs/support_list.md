@@ -60,6 +60,7 @@ em9190 | ✔ usb(mbim,rmnet) | ✘
 --- | --- | ---
 simcom_d8200g | ✔ usb(qmi,rndis) | ✘
 simcom_sim8200ea-m2 | ✔ usb(qmi,rndis) | ✘
+simcom_sim8380g-m2 | ✔ usb(qmi,rndis) | ✘
 
 # foxconn
 型号 | USB 支持 | PCIe 支持
