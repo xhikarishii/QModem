@@ -19,7 +19,7 @@ echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.
 ./scripts/feeds install -a -p modem
 ```
 
-Force update library drivers (use this library drivers):
+Force update library drivers (use this library's drivers):
 
 ```shell
 ./scripts/feeds install -a -f -p modem
@@ -135,12 +135,23 @@ This page allows users to configure each slot.
 | **Enable 5G to Ethernet**     | Enables communication via network interface for supported modules. |
 | **Associated USB**            | Associates USB ports with PCIe ports for better AT communication compatibility. |
 
+### Module Configuration
+
+This page allows users to modify module configurations. It is an advanced feature, and incorrect usage may cause the device to malfunction. The primary purpose is to manually add modules not in the compatibility list.  
+The configuration introduces `post_init` and `pre_dial` options, allowing users to set custom delays and send custom AT commands after module initialization or before dialing. Other options are self-explanatory.
+
 ## Development Plan
 
 | Plan                                      | Progress             |
 |-------------------------------------------|----------------------|
 | Separate backend from luci-app completely | 0%                   |
 | Switch to js luci                         | 5%                   |
+| Support more modules                      | 0%                   |
+| Use at_daemon to monitor module AT events | 5%                   |
+| Add phone functionality                   | 0%                   |
+| Improve documentation                     | 0%                   |
+| Add diagnostic features for user debugging | 0%                  |
+| Add contributor and maintainer info in code | 0%                  |
 
 # Acknowledgments
 
