@@ -79,6 +79,10 @@ get_driver()
 		if [ "$type" == "l" ];then
 			link=$(basename $(ls -l $i | awk '{print $11}'))
 			case $link in
+                "mtk_t7xx")
+                    mode="mtk_pcie"
+                    break
+                    ;;
 				"qmi_wwan"*) 
 					mode="qmi"
 					break
@@ -606,6 +610,9 @@ dial(){
             at_dial_monitor
             ;;
         "rndis")
+            at_dial_monitor
+            ;;
+        "mtk_pcie")
             at_dial_monitor
             ;;
         *)

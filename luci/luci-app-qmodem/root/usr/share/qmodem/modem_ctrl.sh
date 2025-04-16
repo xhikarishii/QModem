@@ -67,7 +67,8 @@ get_at_cfg(){
     duns=$(ls /dev/mhi_DUN*)
     ttys=$(ls /dev/ttyUSB*)
     ttyacms=$(ls /dev/ttyACM*)
-    all_ttys="$duns $ttys $ttyacms"
+    wwanNatN=$(ls /dev/wwan* |grep -E wwan[0-9]at[0-9])
+    all_ttys="$duns $ttys $ttyacms $wwanNatN"
     json_add_array other_ttys
     for tty in $all_ttys; do
         [ -n "$tty" ] && json_add_string "" "$tty"

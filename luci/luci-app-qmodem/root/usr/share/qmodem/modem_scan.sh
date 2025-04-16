@@ -40,11 +40,11 @@ get_default_metric()
 _get_associated_usb_by_path()
 {
     local cfg="$1"
-    echo $target_slot
+    m_debug $target_slot
     config_get _get_slot $cfg slot
     if [ "$target_slot" == "$_get_slot" ];then
         config_get associated_usb $cfg associated_usb
-        echo \[$target_slot\]associated_usb:$associated_usb
+        m_debug \[$target_slot\]associated_usb:$associated_usb
     fi
     
 }
@@ -171,9 +171,17 @@ scan_pcie_slot_interfaces()
           dun_device=$(ls "$wwan0_path" | grep wwan0at0)
           [ ! -z "$dun_device" ] &&  dun_device_path="$wwan0_path/$dun_device"
           [ ! -z "$dun_device_path" ] &&  dun_devices=$(basename "$dun_device_path") 
+        fi
 	fi
+    #mt_t7xx device
+    wwan_path="$slot_path/wwan"
+    net_devices=$(ls "$wwan_path" | grep -E "wwan[0-9]")
+    devices_path="$wwan_path/$net_devices"
+    if [ -d "$devices_path" ];then
+      mbim_devices=$(ls "$devices_path" | grep -E "wwan[0-9]mbim[0-9]")
+      dun_devices=$(ls "$devices_path" | grep -E "wwan[0-9]at[0-9]")
     fi
-    m_debug "net_devices: $net_devices dun_devices: $dun_devices"
+    echo "net_devices: $net_devices dun_devices: $dun_devices"
     at_ports="$dun_devices" 
     [ -n "$net_devices" ] && get_associate_usb $slot
     if [ -n "$associated_usb" ]; then
@@ -250,7 +258,7 @@ scan_usb_slot_interfaces()
             ;;
         esac 
     done
-    echo "net_devices: $net_devices tty_devices: $tty_devices"
+    m_debug "net_devices: $net_devices tty_devices: $tty_devices"
     at_ports="$tty_devices"
     validate_at_port
 }
