@@ -750,6 +750,19 @@
                     "mbim"
                 ]
             },
+            "simcom_sim8380g-m2": {
+                "manufacturer": "simcom",
+                "platform": "qualcomm",
+                "data_interface": "pcie",
+                "define_connect": "1",
+                "wcdma_band": "1/2/3/4/5/8",
+                "lte_band": "1/2/3/4/5/7/8/12/13/14/17/18/19/20/25/26/28/29/30/66/71",
+                "nsa_band": "1/2/3/5/7/8/12/20/28/40/41/48/66/71/77/78/79",
+                "sa_band": "1/2/3/5/7/8/12/20/28/40/41/48/66/71/77/78/79",
+                "modes": [
+                    "qmi"
+                ]
+            },
             "rm500q-cn": {
                 "manufacturer": "quectel",
                 "platform": "qualcomm",
@@ -1117,11 +1130,13 @@
                 "qualcomm": {
                     "vendor_id": [
                         "1a0e",
-                        "1e0e"
+                        "1e0e",
+			"17cb"
                     ],
                     "product_id": [
                         "9001",
-                        "9011"
+                        "9011",
+			"0308"
                     ]
                 }
             },

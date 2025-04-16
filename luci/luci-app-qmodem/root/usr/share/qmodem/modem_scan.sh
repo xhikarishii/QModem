@@ -172,14 +172,16 @@ scan_pcie_slot_interfaces()
           [ ! -z "$dun_device" ] &&  dun_device_path="$wwan0_path/$dun_device"
           [ ! -z "$dun_device_path" ] &&  dun_devices=$(basename "$dun_device_path") 
         fi
-	fi
+    fi
     #mt_t7xx device
     wwan_path="$slot_path/wwan"
-    net_devices=$(ls "$wwan_path" | grep -E "wwan[0-9]")
-    devices_path="$wwan_path/$net_devices"
-    if [ -d "$devices_path" ];then
-      mbim_devices=$(ls "$devices_path" | grep -E "wwan[0-9]mbim[0-9]")
-      dun_devices=$(ls "$devices_path" | grep -E "wwan[0-9]at[0-9]")
+    if [  -d "$wwan_path" ]; then
+    	net_devices=$(ls "$wwan_path" | grep -E "wwan[0-9]")
+    	devices_path="$wwan_path/$net_devices"
+    	if [ -d "$devices_path" ];then
+      		mbim_devices=$(ls "$devices_path" | grep -E "wwan[0-9]mbim[0-9]")
+      		dun_devices=$(ls "$devices_path" | grep -E "wwan[0-9]at[0-9]")
+    	fi
     fi
     echo "net_devices: $net_devices dun_devices: $dun_devices"
     at_ports="$dun_devices" 
@@ -299,6 +301,8 @@ match_config()
 
         [[ "$name" = *"T99W373"* ]] && name="t99w373"
 
+	[[ "$name" = *"SIM8380G"* ]] && name="SIM8380G-M2"
+
 	#rg200u-cn
     [[ "$name" = *"rg200u-cn"* ]] && name="rg200u-cn"
 
@@ -321,7 +325,7 @@ get_modem_model()
     local at_port=$1
     cgmm=$(at $at_port "AT+CGMM")
     sleep 1
-    cgmm_1=$(at $at_port "AT+CGMM?")
+    cgmm_1=$(at $at_port "AT+CGMM")
     name_1=$(echo -e "$cgmm" |grep "+CGMM: " | awk -F': ' '{print $2}')
     name_2=$(echo -e "$cgmm_1" |grep "+CGMM: " | awk -F'"' '{print $2} '| cut -d ' ' -f 1)
     name_3=$(echo -e "$cgmm" | sed -n '2p')
@@ -366,6 +370,7 @@ add()
     for trys in $(seq 1 3);do
         for at_port in $valid_at_ports; do
             m_debug "try at port $at_port;time $trys"
+	    sleeps 1
             get_modem_model "/dev/$at_port"
             [ $? -eq 0 ] && break || modem_name=""
         done
