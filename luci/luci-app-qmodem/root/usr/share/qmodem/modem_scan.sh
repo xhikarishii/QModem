@@ -186,10 +186,9 @@ scan_pcie_slot_interfaces()
     echo "net_devices: $net_devices dun_devices: $dun_devices"
     at_ports="$dun_devices" 
     [ -n "$net_devices" ] && get_associate_usb $slot
-    if [ -n "$associated_usb" ]; then
+    if [ -n "$associated_usb" ] && [ -d "/sys/bus/usb/devices/$associated_usb" ]; then
         echo checking associated_usb: $associated_usb
         local assoc_usb_path="/sys/bus/usb/devices/$associated_usb"
-        [ ! -d "$assoc_usb_path" ] && return
         local slot_interfaces=$(ls $assoc_usb_path | grep -E "$associated_usb:[0-9]\.[0-9]+")
         echo checking slot_interfaces: $slot_interfaces
         for interface in $slot_interfaces; do
@@ -216,7 +215,6 @@ scan_pcie_slot_interfaces()
         done
         at_ports="$dun_devices $tty_devices"
     fi
-        
     validate_at_port
 }
 
