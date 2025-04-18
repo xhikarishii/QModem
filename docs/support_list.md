@@ -53,7 +53,7 @@ srm825n | ✔ usb(ecm,rndis,ncm) | ✘
 # sierra
 型号 | USB 支持 | PCIe 支持
 --- | --- | ---
-em9190 | ✔ usb(mbim,rmnet) | ✘
+em9190 | ✔ usb(mbim,rmnet) | ✔ pcie(mbim,rmnet)
 
 # simcom
 型号 | USB 支持 | PCIe 支持
