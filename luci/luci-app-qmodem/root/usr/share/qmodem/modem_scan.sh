@@ -321,9 +321,10 @@ match_config()
 get_modem_model()
 {
     local at_port=$1
+    sleep 1
     cgmm=$(at $at_port "AT+CGMM")
     sleep 1
-    cgmm_1=$(at $at_port "AT+CGMM")
+    cgmm_1=$(at $at_port "AT+CGMM?")
     name_1=$(echo -e "$cgmm" |grep "+CGMM: " | awk -F': ' '{print $2}')
     name_2=$(echo -e "$cgmm_1" |grep "+CGMM: " | awk -F'"' '{print $2} '| cut -d ' ' -f 1)
     name_3=$(echo -e "$cgmm" | sed -n '2p')
@@ -370,7 +371,6 @@ add()
     for trys in $(seq 1 3);do
         for at_port in $valid_at_ports; do
             m_debug "try at port $at_port;time $trys"
-	    sleeps 1
             get_modem_model "/dev/$at_port"
             [ $? -eq 0 ] && break || modem_name=""
         done
