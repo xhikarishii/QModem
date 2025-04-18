@@ -3,7 +3,7 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:= tom_modem
 PKG_RELEASE:=1
-PKG_VERSION:=1.0.0
+PKG_VERSION:=1.0.1
 
 include $(INCLUDE_DIR)/package.mk
 

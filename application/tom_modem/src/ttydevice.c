@@ -91,6 +91,15 @@ int tty_open_device(PROFILE_T *profile,FDS_T *fds)
         err_msg("Error setting tty device");
         return COMM_ERROR;
     }
+
+    fds->tty_fd = open(profile->tty_dev, O_RDWR | O_NOCTTY | O_NONBLOCK);
+    fds->fdi = fdopen(fds->tty_fd, "r");
+    if (setvbuf(fds->fdi , NULL, _IOFBF, 0))
+    {
+        err_msg("Error setting buffer for fdi");
+        return COMM_ERROR;
+    }
+    usleep(10000);
     tcflush(fds->tty_fd, TCIOFLUSH);
     if (fds->tty_fd >= 0)
         close(fds->tty_fd);
@@ -138,6 +147,12 @@ int tty_read_keyword(FILE *fdi, char *output, int len, char *key_word, int soft_
         {
             read_flag = 1;
             dbg_msg("%s", tmp);
+            if (msg_len + strlen(tmp) >= len)
+            {
+                err_msg("Error: output buffer is too small");
+                exitcode = BUFFER_OVERFLOW;
+                break;
+            }
             if (output != NULL) 
                 msg_len += snprintf(output + msg_len, len - msg_len, "%s", tmp);
 
@@ -177,7 +192,7 @@ int tty_read_keyword(FILE *fdi, char *output, int len, char *key_word, int soft_
             }
         }
 #endif
-        usleep(10000);
+        usleep(5000);
     }
     if (read_flag == 0)
     {

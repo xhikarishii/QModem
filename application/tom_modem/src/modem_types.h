@@ -55,7 +55,7 @@
 #define SMS_BUF_SIZE 65536
 #define LINE_BUF 1024
 #define SMS_LIST_SIZE 128
-#define COMMON_BUF_SIZE 16384
+#define COMMON_BUF_SIZE 65536
 #define PHONE_NUMBER_SIZE 64
 #define SMS_TEXT_SIZE 256
 #define SMS_PDU_STR_SIZE 512
@@ -108,6 +108,11 @@ typedef struct _SMS {
     char *sms_pdu;
 } SMS_T;
 
+typedef struct _AT_MESSAGE {
+    char *message;
+    int len;
+} AT_MESSAGE_T;
+
 enum ERROR_CODES {
     COMM_ERROR = -1,
     SUCCESS = 0,
@@ -116,6 +121,7 @@ enum ERROR_CODES {
     INVALID_PARAM,
     INVALID_HEX,
     UNKNOWN_ERROR,
+    BUFFER_OVERFLOW,
 };
 
 enum SMS_CHARSET {
