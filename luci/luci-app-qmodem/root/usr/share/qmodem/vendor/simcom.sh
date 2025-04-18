@@ -31,6 +31,12 @@ get_mode()
     at_command='AT+CUSBCFG?'
     local mode_num=$(at ${at_port} ${at_command} | grep "USBID: " | sed 's/USBID: 0X1E0E,0X//g' | sed 's/\r//g')
     local mode
+    pcie_cfg=$(at ${at_port} "AT+CPCIEMODE?")
+    pcie_mode=$(echo "$pcie_cfg"|grep +CPCIEMODE: |cut -d':' -f2|xargs)
+    if [ "$pcie_mode" = "EP" ] && [ "$mode_num" = "902B" ]; then
+        mode_num="9001"
+	json_add_int disable_mode_btn 1
+    fi
     case "$platform" in
         "qualcomm")
             case "$mode_num" in
