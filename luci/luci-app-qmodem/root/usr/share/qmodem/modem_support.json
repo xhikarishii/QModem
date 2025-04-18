@@ -982,7 +982,17 @@
                     "qmi",
                     "mbim"
                 ]
-            }
+            },
+            "em9190": {
+                "manufacturer": "sierra",
+                "platform": "qualcomm",
+                "data_interface": "pcie",
+                "define_connect": "1",
+                "modes": [
+                    "mbim",
+                    "rmnet"
+                ]
+            },
         },
         "device": {
             "quectel": {
