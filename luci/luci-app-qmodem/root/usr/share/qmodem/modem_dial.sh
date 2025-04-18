@@ -444,7 +444,6 @@ set_if()
         if [ -z "$interfacev6" ];then
             uci set network.lan.ipv6='1'
             uci set network.lan.ip6assign='64'
-            uci set network.lan.ip6class="${interface6_name}"
             uci set network.${interface6_name}='interface'
             uci set network.${interface6_name}.modem_config="${modem_config}"
             uci set network.${interface6_name}.proto="${protov6}"
