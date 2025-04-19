@@ -112,6 +112,9 @@ int parse_user_input(int argc, char *argv[], PROFILE_T *profile)
             }
             profile->sms_index = atoi(argv[opt++]);
             break;
+        case GREEDY_READ:
+            profile->greedy_read = 1;
+            break;
         default:
             err_msg("Invalid option: %s", argv[opt]);
             break;

@@ -17,6 +17,7 @@
 #define DEBUG_S 'D'
 #define SMS_PDU_S 'p'
 #define SMS_INDEX_S 'i'
+#define GREEDY_READ_S 'g'
 
 #define AT_CMD_L "at_cmd"
 #define TTY_DEV_L "tty_dev"
@@ -30,6 +31,7 @@
 #define DEBUG_L "debug"
 #define SMS_PDU_L "sms_pdu"
 #define SMS_INDEX_L "sms_index"
+#define GREEDY_READ_L "greedy_read"
 
 //operations
 #define AT_OP_S 'a'
@@ -85,6 +87,7 @@ typedef struct _PROFILE {
     int debug;
     char *sms_pdu;
     int sms_index;
+    int greedy_read;
 } PROFILE_T;
 
 
@@ -141,7 +144,8 @@ enum OPTIONS {
     OPERATION,
     DEBUG,
     SMS_PDU,
-    SMS_INDEX
+    SMS_INDEX,
+    GREEDY_READ
 };
 
 enum OPERATIONS {

@@ -128,76 +128,84 @@ int tty_open_device(PROFILE_T *profile,FDS_T *fds)
     return SUCCESS;
 }
 
-int tty_read(FILE *fdi, char *output, int len, int soft_timeout)
-{
-    return tty_read_keyword(fdi, output, len, NULL, soft_timeout);
+int tty_read(FILE *fdi, AT_MESSAGE_T *message, PROFILE_T *profile) {
+    return tty_read_keyword(fdi, message, NULL, profile);
 }
 
-int tty_read_keyword(FILE *fdi, char *output, int len, char *key_word, int soft_timeout)
-{
+int tty_read_keyword(FILE *fdi, AT_MESSAGE_T *message, char *key_word, PROFILE_T *profile) {
     char tmp[LINE_BUF] = {0};
-    int msg_len = 0;
+    char *dynamic_buffer = NULL;
+    int buffer_size = 0;
     int read_flag = 0;
     time_t start_time = time(NULL);
     int exitcode = TIMEOUT_WAITING_NEWLINE;
-    while (difftime(time(NULL), start_time) < soft_timeout)
-    {      
+
+    while (difftime(time(NULL), start_time) < profile->timeout) {
         memset(tmp, 0, LINE_BUF);
-        if (fgets(tmp, LINE_BUF, fdi))
-        {
+        if (fgets(tmp, LINE_BUF, fdi)) {
             read_flag = 1;
             dbg_msg("%s", tmp);
-            if (msg_len + strlen(tmp) >= len)
-            {
-                err_msg("Error: output buffer is too small");
-                exitcode = BUFFER_OVERFLOW;
-                break;
+            if (profile->greedy_read && strlen(tmp) > 0) {
+                start_time = time(NULL);
             }
-            if (output != NULL) 
-                msg_len += snprintf(output + msg_len, len - msg_len, "%s", tmp);
+            if (message != NULL) {
+                int tmp_len = strlen(tmp);
+                char *new_buffer = realloc(dynamic_buffer, buffer_size + tmp_len + 1);
+                if (!new_buffer) {
+                    free(dynamic_buffer);
+                    err_msg("Error: memory allocation failed");
+                    exitcode = BUFFER_OVERFLOW;
+                    break;
+                }
+                dynamic_buffer = new_buffer;
+                memcpy(dynamic_buffer + buffer_size, tmp, tmp_len);
+                buffer_size += tmp_len;
+                dynamic_buffer[buffer_size] = '\0';
+            }
 
             if (strncmp(tmp, "OK", 2) == 0 ||
                 strncmp(tmp, "ERROR", 5) == 0 ||
                 strncmp(tmp, "+CMS ERROR:", 11) == 0 ||
                 strncmp(tmp, "+CME ERROR:", 11) == 0 ||
                 strncmp(tmp, "NO CARRIER", 10) == 0 ||
-                (key_word != NULL && strncmp(tmp, key_word, strlen(key_word)) == 0))
-                {
-                    if (key_word != NULL && strncmp(tmp, key_word, strlen(key_word)) == 0)
-                    {
-                        dbg_msg("keyword found");
-                        exitcode = SUCCESS;
-                    }
-                    else if (key_word == NULL)
-                    {
-                        exitcode = SUCCESS;
-                    }
-                    else
-                    {
-                        exitcode = KEYWORD_NOT_MATCH;
-                    }
-                    break;
+                (key_word != NULL && strncmp(tmp, key_word, strlen(key_word)) == 0)) {
+                if (key_word != NULL && strncmp(tmp, key_word, strlen(key_word)) == 0) {
+                    dbg_msg("keyword found");
+                    exitcode = SUCCESS;
+                } else if (key_word == NULL) {
+                    exitcode = SUCCESS;
+                } else {
+                    exitcode = KEYWORD_NOT_MATCH;
                 }
+                break;
+            }
         }
 #ifdef EARLY_RETURN
-        else
-        {
-            if (read_flag > 500){
+        else {
+            if (read_flag > 500) {
                 dbg_msg("early return");
                 exitcode = TIMEOUT_WAITING_NEWLINE;
                 break;
             }
-            if (read_flag){
+            if (read_flag) {
                 read_flag++;
             }
         }
 #endif
         usleep(5000);
     }
-    if (read_flag == 0)
-    {
+
+    if (read_flag == 0) {
         exitcode = COMM_ERROR;
     }
+
+    if (message != NULL) {
+        message->message = dynamic_buffer;
+        message->len = buffer_size;
+    } else {
+        free(dynamic_buffer);
+    }
+
     return exitcode;
 }
 

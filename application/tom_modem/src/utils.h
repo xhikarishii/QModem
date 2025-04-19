@@ -75,9 +75,9 @@ int match_operation(char *operation_name);
 int decode_pdu(SMS_T *sms);
 
 
-int tty_read_keyword(FILE *fdi, char *output, int len, char *key_word, int soft_timeout);
+int tty_read(FILE *fdi, AT_MESSAGE_T *message, PROFILE_T *profile);
 
-int tty_read(FILE *fdi, char *output, int len, int soft_timeout);
+int tty_read_keyword(FILE *fdi, AT_MESSAGE_T *message, char *key_word, PROFILE_T *profile);
 
 int dump_sms(SMS_T *sms);
 

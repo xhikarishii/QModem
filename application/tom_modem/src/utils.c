@@ -204,6 +204,8 @@ int match_option(char *option_name)
             return SMS_PDU;
         case SMS_INDEX_S:
             return SMS_INDEX;
+        case GREEDY_READ_S:
+            return GREEDY_READ;
         default:
             return -1;
         }
@@ -258,6 +260,10 @@ int match_option(char *option_name)
         else if (strcmp(long_option, SMS_INDEX_L) == 0)
         {
             return SMS_INDEX;
+        }
+        else if (strcmp(long_option, GREEDY_READ_L) == 0)
+        {
+            return GREEDY_READ;
         }
         else
         {
@@ -389,11 +395,12 @@ int usage(char* name)
     err_msg("  -d, --tty_dev <TTY device>  TTY device **REQUIRED**");
     err_msg("  -b, --baud_rate <baud rate>  Baud rate Default: 115200 Supported: 4800,9600,19200,38400,57600,115200");
     err_msg("  -B, --data_bits <data bits>  Data bits Default: 8 Supported: 5,6,7,8");
-    err_msg("  -t, --timeout <timeout>  Timeout Default: 3");
+    err_msg("  -t, --timeout <timeout>  Default: 3 Timeout in seconds, if output is more than timeout, it will be ignored unless -g option is set");
     err_msg("  -o, --operation <operation>  Operation(at[a:defualt],binary_at[b], sms_read[r], sms_send[s], sms_delete[d])");
     err_msg("  -D, --debug Debug mode Default: off");
     err_msg("  -p, --sms_pdu <sms pdu>  SMS PDU");
     err_msg("  -i, --sms_index <sms index>  SMS index");
+    err_msg("  -g, --greedy_read Default: off, Greedy read mode, if set, each round it get new data from tty device, it will reset the timeout");
     #ifdef USE_SEMAPHORE
     err_msg("  -C, --cleanup Semaphore cleanup");
     #endif
@@ -440,6 +447,7 @@ void dump_profile()
     dbg_msg("Debug: %d", s_profile.debug);
     dbg_msg("SMS PDU: %s", s_profile.sms_pdu);
     dbg_msg("SMS index: %d", s_profile.sms_index);
+    dbg_msg("Greedy read: %d", s_profile.greedy_read);
 }
 int display_sms_in_json(SMS_T **sms,int num)
 {
