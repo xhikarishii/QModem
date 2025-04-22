@@ -91,7 +91,7 @@ _dial()
 {
     procd_open_instance "modem_$1"
     procd_set_param command "/usr/share/qmodem/modem_dial.sh" "$1" dial
-    procd_set_param respawn
+    procd_set_param respawn 120 15 10
     procd_close_instance
     logger -t qmodem_network "Modem $1 Start Dial Now"
 }
