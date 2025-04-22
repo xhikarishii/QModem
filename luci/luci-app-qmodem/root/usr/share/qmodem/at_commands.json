@@ -543,6 +543,78 @@
 				"重启模组 > AT+RESET": "AT+RESET"
 			}
 		]
+	},
+	"simcom": {
+		"qualcomm": [
+			{
+				"查询锁频模式 > ": "AT+CNMP?"
+			},
+			{
+				"设置锁频模式 > 自动": "AT+CNMP=2"
+			},
+			{
+				"设置锁频模式 > 仅限 WCDMA": "AT+CNMP=14"
+			},
+			{
+				"设置锁频模式 > 仅限 LTE": "AT+CNMP=38"
+			},
+			{
+				"设置锁频模式 > NR5G": "AT+CNMP=71"
+			},
+			{
+				"设置锁频模式 > WCDMA+LTE Only": "AT+CNMP=54"
+			},
+			{
+				"设置锁频模式 > WCDMA+LTE+NR5G": "AT+CNMP=55"
+			},
+			{
+				"设置锁频模式 > LTE+NR5G": "AT+CNMP=109"
+			},
+			{
+				"重置模组 > AT+CRESET": "AT+CRESET"
+			},
+			{
+				"重置模组 > AT+CFUN=6": "AT+CFUN=6"
+			},
+			{
+				"重置模组 > ATZ": "ATZ"
+			},
+			{
+				"开启显示上下行模式 > AT+CNWINFO=1": "AT+CNWINFO=1"
+			},
+			{
+				"关闭显示上下行模式 > AT+CNWINFO=0": "AT+CNWINFO=0"
+			},
+			{
+				"切换PCIE模式 > AT+CPCIEMODE=EP": "AT+CPCIEMODE=EP"
+			},
+			{
+				"切换USB模式 > AT+CPCIEMODE=HOST": "AT+CPCIEMODE=HOST"
+			},
+			{
+				"开启sim热插拔 > AT+UIMHOTSWAPON=1": "AT+UIMHOTSWAPON=1"
+			},
+			{
+				"关闭sim热插拔 > AT+UIMHOTSWAPON=0": "AT+UIMHOTSWAPON=0"
+			},
+			{
+				"更改imei > AT+SIMEI=imei": "AT+SIMEI=imei"
+			},
+			{
+				"切换sim卡槽 > 卡槽1": "AT+SMSIMCFG=0,1"
+			},
+			{
+				"切换sim卡槽 > 卡槽2": "AT+SMSIMCFG=0,2"
+			},
+			{
+				"设置模块功能 > 最小功能": "AT+CFUN=0"
+			},
+			{
+				"设置模块功能 > 最大功能": "AT+CFUN=1"
+			},
+			{
+				"设置模块功能 > 离线模式": "AT+CFUN=7"
+			}
+		]
 	}
-
 }
