@@ -1,4 +1,3 @@
-
 #include "main.h"
 
 FDS_T s_fds;
@@ -7,11 +6,28 @@ PROFILE_T s_profile;   // global profile
 int parse_user_input(int argc, char *argv[], PROFILE_T *profile)
 {
     int opt = 1;
+    int anonymous_arg = 0;
     int option;
     profile->sms_index = -1;
 #define has_more_argv() (opt < argc ? 1 : 0)
     while (opt < argc)
     {
+        if (argv[opt][0] != '-') {
+            if (anonymous_arg == 0) {
+                profile->tty_dev = argv[opt];
+            }
+            if (anonymous_arg == 1){
+                profile->at_cmd = argv[opt];
+            }
+            if (anonymous_arg >= 2) {
+                err_msg("Too many anonymous arguments");
+                return INVALID_PARAM;
+            }
+            anonymous_arg++;
+            opt++;
+            continue;
+        }
+
         option = match_option(argv[opt]);
         if (option == -1)
         {
@@ -120,7 +136,13 @@ int parse_user_input(int argc, char *argv[], PROFILE_T *profile)
             break;
         }
     }
+
     // default settings:
+    if (profile->tty_dev == NULL)
+    {
+        usage(argv[0]);
+        return INVALID_PARAM;
+    }
     if (profile->baud_rate == 0 )
     {
         profile->baud_rate = 115200;

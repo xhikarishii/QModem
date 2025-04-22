@@ -390,6 +390,8 @@ void escape_json(char *input, char *output)
 int usage(char* name)
 {
     err_msg("Usage: %s [options]", name);
+    err_msg("Or %s [device_path] [AT command]", name);
+    err_msg("Or %s [device_path] [operation]", name);
     err_msg("Options:");
     err_msg("  -c, --at_cmd <AT command>  AT command");
     err_msg("  -d, --tty_dev <TTY device>  TTY device **REQUIRED**");
