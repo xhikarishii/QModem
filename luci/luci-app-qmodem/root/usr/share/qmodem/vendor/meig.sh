@@ -346,10 +346,8 @@ network_info()
     add_plain_info_entry "Network Type" "$network_type" "Network Type"
     add_plain_info_entry "AMBR UL" "$ambr_ul" "Access Maximum Bit Rate for Uplink"
     add_plain_info_entry "AMBR DL" "$ambr_dl" "Access Maximum Bit Rate for Downlink"
-    rx_rate=$(rate_convert $rx_rate)
-    tx_rate=$(rate_convert $tx_rate)
-    add_plain_info_entry "Tx Rate" "$tx_rate" "Transmit Rate"
-    add_plain_info_entry "Rx Rate" "$rx_rate" "Receive Rate"
+    add_speed_entry rx $rx_rate
+    add_speed_entry tx $tx_rate
 }
 
 # Cell information

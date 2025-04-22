@@ -69,6 +69,28 @@ add_bar_info_entry()
     json_close_object
 }
 
+add_speed_entry()
+{
+    rate=$1
+    type=$2
+    if [ -z "$rate" ]; then
+        return
+    fi
+    rate=`convert_rate $rate`
+    case $type in
+        "rx")
+            add_plain_info_entry "Rx Rate" "$rate" "Transmit Rate"
+            ;;
+        "tx")
+            add_plain_info_entry "Tx Rate" "$rate" "Receive Rate"
+            ;;
+        *)
+            return
+            ;;
+    esac
+
+}
+
 add_avalible_band_entry()
 {
     band_id=$1
