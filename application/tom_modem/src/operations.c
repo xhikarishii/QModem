@@ -200,16 +200,15 @@ int sms_send(PROFILE_T *profile, FDS_T *fds) {
         return w_ret;
     }
 
+    // Set PDU format response
     r_ret = tty_read_keyword(fds->fdi, NULL, "OK", profile);
     if (r_ret) {
         dbg_msg("Error setting PDU format, error code: %d", r_ret);
         free(send_sms_cmd);
         free(write_pdu_cmd);
-        if (message.message) free(message.message);
         return r_ret;
     }
     dbg_msg("Set PDU format success");
-    if (message.message) free(message.message);
 
     snprintf(send_sms_cmd, 32, SEND_SMS, pdu_expected_len);
     snprintf(write_pdu_cmd, 256, "%s%c", profile->sms_pdu, 0x1A);
@@ -225,14 +224,10 @@ int sms_send(PROFILE_T *profile, FDS_T *fds) {
     }
 
     r_ret = tty_read_keyword(fds->fdi, NULL, ">", profile);
+    //waiting for > prompt
     if (r_ret) {
         dbg_msg("Error sending SMS STEP 1, error code: %d", r_ret);
-        free(send_sms_cmd);
-        free(write_pdu_cmd);
-        if (message.message) free(message.message);
-        return r_ret;
     }
-    if (message.message) free(message.message);
 
     usleep(10000);
     w_ret = tty_write(fds->fdo, write_pdu_cmd);
@@ -241,19 +236,12 @@ int sms_send(PROFILE_T *profile, FDS_T *fds) {
         free(write_pdu_cmd);
         return w_ret;
     }
-
-    r_ret = tty_read_keyword(fds->fdi, &message, "+CMGS:", profile);
-    if (r_ret) {
-        dbg_msg("Error sending SMS STEP 2, error code: %d", r_ret);
-        free(send_sms_cmd);
-        free(write_pdu_cmd);
-        if (message.message) free(message.message);
-        return r_ret;
-    }
-    if (message.message) free(message.message);
-
     free(send_sms_cmd);
     free(write_pdu_cmd);
-
+    r_ret = tty_read_keyword(fds->fdi, NULL, "+CMGS:", profile);
+    if (r_ret) {
+        dbg_msg("Error sending SMS STEP 2, error code: %d", r_ret);
+        return r_ret;
+    }
     return SUCCESS;
 }
