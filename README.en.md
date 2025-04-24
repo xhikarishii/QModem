@@ -1,10 +1,14 @@
 # QModem
 
+[![Auto compile with OpenWrt SDK](https://github.com/FUjr/modem_feeds/actions/workflows/main.yml/badge.svg)](https://github.com/FUjr/modem_feeds/actions/workflows/main.yml)
+
 QModem is a module management plugin compatible with OpenWRT version 21 and later. Developed in Lua, it is compatible with QWRT/LEDE/Immortalwrt/OpenWRT.
 
 (For js luci, please add the luci-compat package.)
 
-[TOC]
+[Support List](./docs/support_list.md)
+
+[toc]
 
 # Quick Start
 
@@ -14,15 +18,15 @@ To use QModem, you first need to add a feed source in OpenWRT:
 
 ```shell
 echo >> feeds.conf.default
-echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.default
-./scripts/feeds update modem
-./scripts/feeds install -a -p modem
+echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
+./scripts/feeds update qmodem
+./scripts/feeds install -a -p qmodem
 ```
 
 Force update library drivers (use this library's drivers):
 
 ```shell
-./scripts/feeds install -a -f -p modem
+./scripts/feeds install -a -f -p qmodem
 ```
 
 ## Integrate Packages
@@ -37,18 +41,19 @@ make menuconfig
 
 In the configuration menu, you can select the following packages (all under Luci/Application):
 
-| Package Name                          | Functionality                             |
-| ------------------------------------- | :---------------------------------------: |
-| **luci-app-qmodem**                   | Provides module info, dialing settings, and advanced settings. Other features depend on this main program (backend included here). |
-| **Add Lua Luci Homepage**             | Adds Lua Luci homepage. If using luci2 (Js Luci) and selected, there will be two homepages. |
-| **QMI Driver Selection**              | Choose between Generic QMI driver or Vendor QMI driver. |
+
+| Package Name                          |                                                                                                          Functionality                                                                                                          |
+| ------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| **luci-app-qmodem**                   |                                                Provides module info, dialing settings, and advanced settings. Other features depend on this main program (backend included here).                                                |
+| **Add Lua Luci Homepage**             |                                                                   Adds Lua Luci homepage. If using luci2 (Js Luci) and selected, there will be two homepages.                                                                   |
+| **QMI Driver Selection**              |                                                                                     Choose between Generic QMI driver or Vendor QMI driver.                                                                                     |
 | **Quectel Connect Manager Selection** | Choose one of:<br>- Tom customized Quectel CM: With options to block default route addition and resolv.conf modification<br>- QWRT quectel-CM-5G: Uses QWRT's quectel-CM-5G<br>- NORMAL quectel-cm: Uses the standard quectel-cm |
-| **Add PCIe Modem SUPPORT**            | Select PCIe driver, requires kmod_mhi in feeds. |
-| **Add Qfirehose SUPPORT**             | Add Qfirehose support for Qualcomm chip module firmware upgrade. |
-| **luci-app-qmodem-hc**                | Supports hc-g80 SIM card switching, exclusive to specific devices. |
-| **luci-app-qmodem-mwan**              | Supports multi-WAN settings.              |
-| **luci-app-qmodem-sms**               | SMS sending feature.                      |
-| **luci-app-qmodem-ttl**               | TTL rewrite functionality.                |
+| **Add PCIe Modem SUPPORT**            |                                                                                         Select PCIe driver, requires kmod_mhi in feeds.                                                                                         |
+| **Add Qfirehose SUPPORT**             |                                                                                 Add Qfirehose support for Qualcomm chip module firmware upgrade.                                                                                 |
+| **luci-app-qmodem-hc**                |                                                                                Supports hc-g80 SIM card switching, exclusive to specific devices.                                                                                |
+| **luci-app-qmodem-mwan**              |                                                                                                   Supports multi-WAN settings.                                                                                                   |
+| **luci-app-qmodem-sms**               |                                                                                                       SMS sending feature.                                                                                                       |
+| **luci-app-qmodem-ttl**               |                                                                                                    TTL rewrite functionality.                                                                                                    |
 
 # Project Introduction
 
@@ -103,62 +108,67 @@ Provides global configuration options for unified module settings.
 
 This page is the **MWAN Configuration** interface, helping users manage multiple WAN connections by monitoring specific IPs to ensure network stability and reliability. Users can customize connection priorities and interfaces for load balancing or failover.
 
-| Feature             | Description                                                        |
-|---------------------|--------------------------------------------------------------------|
-| **Enable MWAN**     |                                                                    |
-| Same Source Address | Ensures traffic from the same source uses the same WAN port for a set time. |
-| **IPv4 Configuration** |                                                                |
-| Interface           | Select WAN interfaces (e.g., `wan`, `usb0`) for different network connections. |
-| Tracking IP         | Enter specific IP addresses or domain names to monitor.            |
-| Priority            | Set connection priority (1 to 255); lower values mean higher priority. |
+
+| Feature                | Description                                                                   |
+| ---------------------- | ----------------------------------------------------------------------------- |
+| **Enable MWAN**        |                                                                               |
+| Same Source Address    | Ensures traffic from the same source uses the same WAN port for a set time.   |
+| **IPv4 Configuration** |                                                                               |
+| Interface              | Select WAN interfaces (e.g.,`wan`, `usb0`) for different network connections. |
+| Tracking IP            | Enter specific IP addresses or domain names to monitor.                       |
+| Priority               | Set connection priority (1 to 255); lower values mean higher priority.        |
 
 ## QModem Settings
 
-| Configuration                | Description                                                        |
-|------------------------------|--------------------------------------------------------------------|
-| **Disable Auto-Load/Remove** | Disables all features below.                                       |
-| **Enable PCIe Module Scan**  | Scans PCIe interfaces at startup (time-consuming).                 |
-| **Enable USB Module Scan**   | Scans USB interfaces at startup (time-consuming).                  |
-| **Monitor Configured USB Ports** | Monitors USB hot-plug events for configured slots.            |
-| **Monitor Configured PCIe Ports** | Scans PCIe ports at startup for configured slots.            |
+
+| Configuration                     | Description                                        |
+| --------------------------------- | -------------------------------------------------- |
+| **Disable Auto-Load/Remove**      | Disables all features below.                       |
+| **Enable PCIe Module Scan**       | Scans PCIe interfaces at startup (time-consuming). |
+| **Enable USB Module Scan**        | Scans USB interfaces at startup (time-consuming).  |
+| **Monitor Configured USB Ports**  | Monitors USB hot-plug events for configured slots. |
+| **Monitor Configured PCIe Ports** | Scans PCIe ports at startup for configured slots.  |
 
 ### Slot Configuration
 
 This page allows users to configure each slot.
 
-| Configuration                  | Description                                                        |
-|-------------------------------|--------------------------------------------------------------------|
-| **Slot Type**                 | Choose the slot type (PCIe/USB) for device identification.         |
-| **Slot ID**                   | Enter the device's unique identifier (e.g., `0001:11:00.0[pcie]`). |
-| **SIM Card Indicator**        | Bind slot to corresponding indicator light for SIM card status.    |
-| **Network Indicator**         | Bind slot to network status indicator for monitoring connection status. |
-| **Enable 5G to Ethernet**     | Enables communication via network interface for supported modules. |
-| **Associated USB**            | Associates USB ports with PCIe ports for better AT communication compatibility. |
+
+| Configuration             | Description                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------- |
+| **Slot Type**             | Choose the slot type (PCIe/USB) for device identification.                      |
+| **Slot ID**               | Enter the device's unique identifier (e.g.,`0001:11:00.0[pcie]`).               |
+| **SIM Card Indicator**    | Bind slot to corresponding indicator light for SIM card status.                 |
+| **Network Indicator**     | Bind slot to network status indicator for monitoring connection status.         |
+| **Enable 5G to Ethernet** | Enables communication via network interface for supported modules.              |
+| **Associated USB**        | Associates USB ports with PCIe ports for better AT communication compatibility. |
 
 ### Module Configuration
 
-This page allows users to modify module configurations. It is an advanced feature, and incorrect usage may cause the device to malfunction. The primary purpose is to manually add modules not in the compatibility list.  
+This page allows users to modify module configurations. It is an advanced feature, and incorrect usage may cause the device to malfunction. The primary purpose is to manually add modules not in the compatibility list.
 The configuration introduces `post_init` and `pre_dial` options, allowing users to set custom delays and send custom AT commands after module initialization or before dialing. Other options are self-explanatory.
 
 ## Development Plan
 
-| Plan                                      | Progress             |
-|-------------------------------------------|----------------------|
-| Separate backend from luci-app completely | 0%                   |
-| Switch to js luci                         | 5%                   |
-| Support more modules                      | 0%                   |
-| Use at_daemon to monitor module AT events | 5%                   |
-| Add phone functionality                   | 0%                   |
-| Improve documentation                     | 0%                   |
-| Add diagnostic features for user debugging | 0%                  |
-| Add contributor and maintainer info in code | 0%                  |
+
+| Plan                                        | Progress |
+| ------------------------------------------- | -------- |
+| Separate backend from luci-app completely   | 0%       |
+| Switch to js luci                           | 5%       |
+| Support more modules                        | 0%       |
+| Use at_daemon to monitor module AT events   | 5%       |
+| Add phone functionality                     | 0%       |
+| Improve documentation                       | 0%       |
+| Add diagnostic features for user debugging  | 0%       |
+| Add contributor and maintainer info in code | 0%       |
 
 # Acknowledgments
 
 During the development of the module management plugin, the following repositories were referenced:
 
-| Project                                    | Reference Content                       |
-|--------------------------------------------|-----------------------------------------|
+
+| Project                                      | Reference Content                       |
+| -------------------------------------------- | --------------------------------------- |
 | https://github.com/Siriling/5G-Modem-Support | Module list and some AT implementations |
 | https://github.com/fujr/luci-app-4gmodem     | Adopted many ideas from this project    |
 | https://github.com/obsy/sms_tool             | AT command sending tool                 |

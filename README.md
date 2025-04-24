@@ -1,5 +1,6 @@
 # QModem
 [![Auto compile with OpenWrt SDK](https://github.com/FUjr/modem_feeds/actions/workflows/main.yml/badge.svg)](https://github.com/FUjr/modem_feeds/actions/workflows/main.yml)
+
 以前我在github上抄代码，作者跟我说点个star，我都会说好好好，但是编译完了刷机后也没想起来点star，其实这样挺不好的。
 现在作者跟我说点个star，除非代码真的很好到我想打好评的程度，否则我就会在issue直接说，抱歉我不想star，然后直接抄。作为一个有讨好倾向的人，这就是我锻炼真诚和勇气的方式
 
@@ -21,15 +22,15 @@
 
 ```shell
 echo >> feeds.conf.default
-echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.default
-./scripts/feeds update modem
-./scripts/feeds install -a -p modem
+echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
+./scripts/feeds update qmodem
+./scripts/feeds install -a -p qmodem
 ```
 
 强制更新库驱动 (使用本库驱动):
 
 ```shell
-./scripts/feeds install -a -f -p modem
+./scripts/feeds install -a -f -p qmodem
 ```
 
 ## 集成软件包
