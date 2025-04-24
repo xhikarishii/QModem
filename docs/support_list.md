@@ -1,69 +1,69 @@
 # quectel
-型号 | USB 支持 | PCIe 支持
---- | --- | ---
-em05 | ✔ usb(qmi,ecm,mbim,rndis,ncm) | ✘
-em120k | ✔ usb(qmi,ecm,mbim,rndis,ncm) | ✘
-rg200u-cn | ✔ usb(ecm,mbim,rndis,ncm) | ✘
-rm500u-cn | ✔ usb(ecm,mbim,rndis,ncm) | ✘
-rm500u-ea | ✔ usb(ecm,mbim,rndis,ncm) | ✘
-rm500s-ce | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rm500q-cn | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rm510q-gl | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
-rm510q-glha | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
-rg500q-ea | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rm500q-ae | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rm500q-gl | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rm502q-ae | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rm502q-gl | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rm505q-ae | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
-rm520n-cn | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
-rm520n-eu | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rm520n-gl | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rg501q-eu | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rg520n-eu | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-mh8001-eu | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rg520f-eb | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-rg530f-na | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
-ec20f | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
-ec25 | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
-ec21 | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
-ec200a | ✔ usb(ecm,mbim,rndis,ncm) | ✘
+Model | Platform | USB  | PCIe 
+--- | --- | --- | ---
+em05 | lte |✔ usb(qmi,ecm,mbim,rndis,ncm) | ✘
+em120k | lte12 |✔ usb(qmi,ecm,mbim,rndis,ncm) | ✘
+rg200u-cn | unisoc |✔ usb(ecm,mbim,rndis,ncm) | ✘
+rm500u-cn | unisoc |✔ usb(ecm,mbim,rndis,ncm) | ✘
+rm500u-ea | unisoc |✔ usb(ecm,mbim,rndis,ncm) | ✘
+rm500s-ce | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rm500q-cn | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rm510q-gl | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
+rm510q-glha | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
+rg500q-ea | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rm500q-ae | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rm500q-gl | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rm502q-ae | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rm502q-gl | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rm505q-ae | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
+rm520n-cn | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
+rm520n-eu | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rm520n-gl | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rg501q-eu | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rg520n-eu | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+mh8001-eu | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rg520f-eb | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+rg530f-na | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,gobinet,mbim)
+ec20f | lte |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
+ec25 | lte |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
+ec21 | lte |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
+ec200a | lte |✔ usb(ecm,mbim,rndis,ncm) | ✘
 
 # fibocom
-型号 | USB 支持 | PCIe 支持
---- | --- | ---
-fm650-cn | ✔ usb(ecm,mbim,rndis,ncm) | ✘
-fm350-gl | ✔ usb(rndis) | ✔ pcie(mbim)
-fm350-gl-00 | ✔ usb(rndis) | ✘
-fm350r-gl | ✔ usb(rndis) | ✔ pcie(mbim)
-rw350r-gl | ✔ usb(rndis) | ✘
-fm150-ae | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,mbim)
-fm160-cn | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
-fm160-na | ✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
-nl668 | ✔ usb(ecm,rndis,ncm) | ✘
-nl678 | ✔ usb(qmi,ecm,rndis,ncm) | ✘
+Model | Platform | USB  | PCIe 
+--- | --- | --- | ---
+fm650-cn | unisoc |✔ usb(ecm,mbim,rndis,ncm) | ✘
+fm350-gl | mediatek |✔ usb(rndis) | ✔ pcie(mbim)
+fm350-gl-00 | mediatek |✔ usb(rndis) | ✘
+fm350r-gl | mediatek |✔ usb(rndis) | ✔ pcie(mbim)
+rw350r-gl | mediatek |✔ usb(rndis) | ✘
+fm150-ae | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✔ pcie(qmi,mbim)
+fm160-cn | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
+fm160-na | qualcomm |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
+nl668 | lte |✔ usb(ecm,rndis,ncm) | ✘
+nl678 | lte |✔ usb(qmi,ecm,rndis,ncm) | ✘
 
 # meig
-型号 | USB 支持 | PCIe 支持
---- | --- | ---
-srm815 | ✔ usb(ecm,rndis,ncm) | ✘
-srm825 | ✔ usb(ecm,rndis,ncm) | ✘
-srm825n | ✔ usb(ecm,rndis,ncm) | ✘
+Model | Platform | USB  | PCIe 
+--- | --- | --- | ---
+srm815 | qualcomm |✔ usb(ecm,rndis,ncm) | ✘
+srm825 | qualcomm |✔ usb(ecm,rndis,ncm) | ✘
+srm825n | qualcomm |✔ usb(ecm,rndis,ncm) | ✘
 
 # sierra
-型号 | USB 支持 | PCIe 支持
---- | --- | ---
-em9190 | ✔ usb(mbim,rmnet) | ✔ pcie(mbim,rmnet)
+Model | Platform | USB  | PCIe 
+--- | --- | --- | ---
+em9190 | qualcomm |✔ usb(mbim,rmnet) | ✔ pcie(mbim,rmnet)
 
 # simcom
-型号 | USB 支持 | PCIe 支持
---- | --- | ---
-simcom_d8200g | ✔ usb(qmi,rndis) | ✘
-simcom_sim8200ea-m2 | ✔ usb(qmi,rndis) | ✘
-simcom_sim8380g-m2 | ✔ usb(qmi,rndis) | ✔ pcie(qmi)
+Model | Platform | USB  | PCIe 
+--- | --- | --- | ---
+simcom_d8200g | qualcomm |✔ usb(qmi,rndis) | ✘
+simcom_sim8200ea-m2 | qualcomm |✔ usb(qmi,rndis) | ✘
+simcom_sim8380g-m2 | qualcomm |✔ usb(qmi,rndis) | ✔ pcie(qmi)
 
 # foxconn
-型号 | USB 支持 | PCIe 支持
---- | --- | ---
-t99w175 | ✔ usb(mbim,rmnet) | ✔ pcie(mbim)
-t99w373 | ✔ usb(mbim,rmnet) | ✔ pcie(mbim)
+Model | Platform | USB  | PCIe 
+--- | --- | --- | ---
+t99w175 | qualcomm |✔ usb(mbim,rmnet) | ✔ pcie(mbim)
+t99w373 | qualcomm |✔ usb(mbim,rmnet) | ✔ pcie(mbim)
