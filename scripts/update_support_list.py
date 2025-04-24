@@ -9,10 +9,10 @@ def generate_markdown(result):
     markdown_output = []
     for vendor, models in result.items():
         markdown_output.append(f"# {vendor}")
-        markdown_output.append("型号 | USB 支持 | PCIe 支持")
-        markdown_output.append("--- | --- | ---")
+        markdown_output.append("Model | Platform | USB  | PCIe ")
+        markdown_output.append("--- | --- | --- | ---")
         for model, support in models.items():
-            markdown_output.append(f"{model} | {support['usb']} | {support['pcie']}")
+            markdown_output.append(f"{model} | {support['platform']} |{support['usb']} | {support['pcie']}")
         markdown_output.append("")  # 空行分隔
     return markdown_output
 
@@ -22,7 +22,7 @@ def generate_github_release_notes(result):
     for vendor, models in result.items():
         release_notes.append(f"## {vendor}")
         for model, support in models.items():
-            release_notes.append(f"- {model}: USB 支持 - {support['usb']}, PCIe 支持 - {support['pcie']}")
+            release_notes.append(f"- {model}: USB - {support['usb']}, PCIe - {support['pcie']}")
         release_notes.append("")
     return release_notes
 
@@ -41,6 +41,7 @@ if __name__ == "__main__":
     for interface_type in ['usb', 'pcie']:
         for model, details in data['modem_support'][interface_type].items():
             vendor = details.get('manufacturer', 'unknown').lower()
+            platform = details.get('platform', 'unknown').lower()
             modes = ','.join(details.get('modes', []))
             support = f"✔ {interface_type}({modes})"
             
@@ -50,6 +51,7 @@ if __name__ == "__main__":
                 result[vendor][model] = {'usb': '✘', 'pcie': '✘'}
             
             result[vendor][model][interface_type] = support
+            result[vendor][model]['platform'] = platform
     markdown_output = generate_markdown(result)
     release_notes = generate_github_release_notes(result)
     with open(f"{prefix}.md", 'w') as f:
