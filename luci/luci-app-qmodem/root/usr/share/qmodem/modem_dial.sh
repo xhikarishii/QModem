@@ -782,15 +782,12 @@ at_dial()
     esac
     m_debug "dialing vendor:$manufacturer;platform:$platform; $cgdcont_command ; $at_command"
     at "${at_port}" "${cgdcont_command}"
-    [ $mtk -eq 1 ] && sleep 1
     at "$at_port" "$at_command"
-    [ $mtk -eq 1 ] && sleep 1
     if [ "$driver" = "mtk_pcie" ];then
+        at "$at_port" "AT+CGACT=0,3"
         mbim_port=$(echo "$at_port" | sed 's/at/mbim/g')
-        umbim -d $mbim_port disconnect > /dev/null 2>&1
-        sleep 1
-        umbim -d $mbim_port connect > /dev/null 2>&1
-        sleep 1
+        umbim -d $mbim_port disconnect
+        umbim -d $mbim_port connect 0
     fi
 }
 

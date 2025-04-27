@@ -76,7 +76,7 @@ add_speed_entry()
     if [ -z "$rate" ]; then
         return
     fi
-    rate=`convert_rate $rate`
+    rate=`rate_convert $rate`
     case $type in
         "rx")
             add_plain_info_entry "Rx Rate" "$rate" "Transmit Rate"
