@@ -412,6 +412,7 @@ add()
 set qmodem.$section_name.path="$modem_path"
 set qmodem.$section_name.data_interface="$slot_type"
 set qmodem.$section_name.enable_dial="1"
+set qmodem.$section_name.soft_reboot="0"
 set qmodem.$section_name.pdp_type="ip"
 set qmodem.$section_name.state="enabled"
 set qmodem.$section_name.metric=$metric
