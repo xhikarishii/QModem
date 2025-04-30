@@ -114,6 +114,7 @@ update_config()
     config_get en_bridge $modem_config en_bridge
     config_get do_not_add_dns $modem_config do_not_add_dns
     config_get dns_list $modem_config dns_list
+    [ "$manufacturer" == "fibocom" ] && [ "$platform" == "mediatek" ] && config_get mtk_check $modem_config mtk_check
     config_get global_dial main enable_dial
     # config_get ethernet_5g u$modem_config ethernet 转往口获取命令更新，待测试
     config_foreach get_associate_ethernet_by_path modem-slot
@@ -263,14 +264,6 @@ check_ip()
         fi
 
         if [ -n "$ipaddr" ];then
-            if [ $mtk -eq 1 ] && echo "$ipv4_config" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; then
-                if [ "$pdp_type" = "ipv4v6" ];then
-                    if ! ping -c 2 -w 5 2400:3200::1 > /dev/null 2>&1; then
-                        m_debug "ipv6 is down,try to restart"
-                        ifdown "$interface6_name" && sleep 2 && ifup "$interface6_name"
-                    fi
-                fi
-            fi
             ipv6=$(echo $ipaddr | grep -oE "\b([0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}\b")
             ipv4=$(echo $ipaddr | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b")
             if [ "$manufacturer" = "simcom" ];then
@@ -296,6 +289,84 @@ check_ip()
             connection_status="-1"
             m_debug "at port response unexpected $ipaddr"
         fi
+}
+
+check_mtk_connection()
+{
+    local lock_file="${MODEM_RUNDIR}/${modem_config}_dir/mtk_check.lock"
+    local result_file="${MODEM_RUNDIR}/${modem_config}_dir/mtk_check_result"
+
+    if [ -f "$lock_file" ]; then
+        local lock_time=$(stat -c %Y "$lock_file" 2>/dev/null || echo 0)
+        local current_time=$(cat /proc/uptime | awk '{print int($1)}')
+        if [ $((current_time - lock_time)) -lt 5 ]; then
+            return 0
+        else
+            rm -f "$lock_file"
+        fi
+    fi
+
+    touch "$lock_file"
+
+    (
+        if [ "$mtk" -eq 1 ] && [ -n "$ipv4" ] && [ -n "$modem_netcard" ]; then
+            local test=0
+
+            if ping -I "$modem_netcard" -c 1 -w 2 1.1.1.1 > /dev/null 2>&1; then
+                test=1
+            elif ping -I "$modem_netcard" -c 1 -w 2 8.8.8.8 > /dev/null 2>&1; then
+                test=1
+            elif [ -n "$gateway" ] && ping -I "$modem_netcard" -c 1 -w 2 "$gateway" > /dev/null 2>&1; then
+                test=1
+            fi
+
+            if [ "$test" -eq 0 ]; then
+                m_debug "IPv4 connection test failed, will redial"
+                echo "failed" > "$result_file"
+                rm -f "$lock_file"
+                return 1
+            fi
+
+            local ifup_time=$(ubus call network.interface.$interface6_name status 2>/dev/null | jsonfilter -e '@.uptime' 2>/dev/null || echo 0)
+            if [ -n "$ifup_time" ] && [ "$ifup_time" -gt 10 ] && { [ "$pdp_type" = "ipv4v6" ] || [ "$pdp_type" = "IPV4V6" ]; } && [ -n "$ipv6" ]; then
+                local ipv6_test=0
+
+                if ping6 -I "$modem_netcard" -c 1 -w 2 2400:3200::1 > /dev/null 2>&1; then
+                    ipv6_test=1
+                elif ping6 -I "$modem_netcard" -c 1 -w 2 2001:4860:4860::8888 > /dev/null 2>&1; then
+                    ipv6_test=1
+                fi
+
+                if [ "$ipv6_test" -eq 0 ]; then
+                    m_debug "IPv6 connection test failed, restarting IPv6 interface"
+                    if [ -n "$interface6_name" ]; then
+                        ifdown "$interface6_name" && sleep 2 && ifup "$interface6_name"
+                        m_debug "Restarted IPv6 interface $interface6_name"
+                    fi
+                fi
+            fi
+
+            echo "success" > "$result_file"
+        else
+            echo "skipped" > "$result_file"
+        fi
+
+        rm -f "$lock_file"
+    ) &
+
+    return 0
+}
+
+read_mtk_check_result()
+{
+    local result_file="${MODEM_RUNDIR}/${modem_config}_dir/mtk_check_result"
+    if [ -f "$result_file" ]; then
+        local result=$(cat "$result_file")
+        if [ "$result" = "failed" ]; then
+            return 1
+        fi
+    fi
+    return 0
 }
 
 append_to_fw_zone()
@@ -974,6 +1045,7 @@ at_dial_monitor()
     check_ip
     at_dial
     ipv4_cache=$ipv4
+    last_mtk_check=0
     while true; do
         check_ip
         if [ $connection_status -eq 0 ];then
@@ -987,13 +1059,32 @@ at_dial_monitor()
             fi
             sleep 10
         else
-            #检测ipv4是否变化
-            sleep 15
-            if [ "$ipv4" != "$ipv4_cache" ];then
+            check_mtk_if_needed() {
+                if [ "$mtk_check" = "1" ]; then
+                    current_time=$(cat /proc/uptime | awk '{print int($1)}')
+                    if [ "$mtk" -eq 1 ]; then
+                        check_mtk_connection
+                        read_mtk_check_result
+                        if [ $? -eq 1 ]; then
+                            at_dial
+                        fi
+                        last_mtk_check=$current_time
+                    fi
+                fi
+            }
+
+            if [ "$ipv4" != "$ipv4_cache" ]; then
                 handle_ip_change
                 ipv6_cache=$ipv6
                 ipv4_cache=$ipv4
+                continue
             fi
+            sleep 5
+            check_mtk_if_needed
+            sleep 5
+            check_mtk_if_needed
+            sleep 5
+            check_mtk_if_needed
         fi
         check_logfile_line
     done
