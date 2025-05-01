@@ -6,7 +6,9 @@ _Author="Siriling Fujr"
 _Maintainer="Fujr <fjrcn@outlook.com>"
 source /usr/share/qmodem/generic.sh
 
-
+vendor_get_disabled_features(){
+    json_add_string "" ""
+}
 
 debug_subject="fibocom_ctrl"
 #获取拨号模式
@@ -77,7 +79,7 @@ get_mode()
             json_add_string "$available_mode" "0"
         fi
     done
-    json_close_objectget_imei
+    json_close_object
 }
 
 #设置拨号模式
@@ -219,7 +221,7 @@ set_network_prefer_nr()
     esac
 
     #设置模组
-    at_command="AT+GTACT=$network_prefer_num"
+    at_command="AT+GTACT=$network_prefer_num,6,3"
     res=$(at $at_port "$at_command")
     json_select_object "result"
     json_add_string "status" "$res"
@@ -826,8 +828,8 @@ set_lockband_nr()
     m_debug "Fibocom set lockband info"
     get_lockband_config_command="AT+GTACT?"
     get_lockband_config_res=$(at $at_port $get_lockband_config_command)
-    network_prefer_config=$(echo $get_lockband_config_res |cut -d : -f 2| awk -F"," '{ print $1","$2","$3}' |tr -d ' ')
-    local lock_band="$network_prefer_config,$lock_band"
+    network_prefer_config=$(echo $get_lockband_config_res |cut -d : -f 2| awk -F"," '{print $1}' |tr -d ' ')
+    local lock_band="$network_prefer_config,6,3,$lock_band"
     local set_lockband_command="AT+GTACT=$lock_band"
     res=$(at $at_port $set_lockband_command)
 }
