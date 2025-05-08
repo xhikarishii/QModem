@@ -813,7 +813,7 @@ at_dial()
         mbim_port=$(echo "$at_port" | sed 's/at/mbim/g')
         umbim -d $mbim_port disconnect
         sleep 1
-        umbim -d $mbim_port connect
+        umbim -d $mbim_port connect 0
     fi
 }
 
