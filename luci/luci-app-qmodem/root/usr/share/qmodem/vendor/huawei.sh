@@ -17,7 +17,7 @@ function get_imei(){
 
 function set_imei(){
     imei=$1
-    at $at_port "AT+CGSN=\"$imei\""
+    at $at_port "at^phynum=IMEI,$imei"
 }
 
 function get_mode(){
