@@ -786,6 +786,14 @@ at_dial()
                     ;;
             esac
             ;;
+        "huawei")
+            case $platform in
+                "hisilicon")
+                    at_command="AT^SETAUTODIAL=1,1"
+                    cgdcont_command="AT+CGDCONT=1,\"$pdp_type\""
+                    ;;
+            esac
+            ;;
         "simcom")
             case $platform in
                 "qualcomm")
