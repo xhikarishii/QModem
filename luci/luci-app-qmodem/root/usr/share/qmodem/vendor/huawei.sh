@@ -7,7 +7,6 @@ source /usr/share/qmodem/generic.sh
 debug_subject="quectel_ctrl"
 
 vendor_get_disabled_features(){
-    json_add_string "" "NeighborCell"
     json_add_string "" "LockBand"
 }
 
