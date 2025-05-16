@@ -36,6 +36,7 @@ ec200a | lte |✔ usb(ecm,mbim,rndis,ncm) | ✘
 Model | Platform | USB  | PCIe 
 --- | --- | --- | ---
 mt5700m-cn | hisilicon |✔ usb(ecm,ncm) | ✘
+mh5000-31 | hisilicon |✔ usb(ecm) | ✘
 
 # fibocom
 Model | Platform | USB  | PCIe 
