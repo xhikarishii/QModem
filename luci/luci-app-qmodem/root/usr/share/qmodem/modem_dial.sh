@@ -749,6 +749,10 @@ at_dial()
                     at_command="AT+QNETDEVCTL=1,3,1"
                     cgdcont_command="AT+CGDCONT=1,\"$pdp_type\",\"$apn\""
                     ;;
+                "hisilicon")
+                    at_command="AT+QNETDEVCTL=1,1,1"
+                    cgdcont_command=""
+                    ;;
                 "lte")
                     if [ "$define_connect" = "3" ];then
                         at_command="AT+QNETDEVCTL=3,3,1"
