@@ -244,15 +244,12 @@ function base_info(){
 
 cell_info()
 {
-
-
     at_command="AT^MONSC"
     response=$(at $at_port $at_command | grep "\^MONSC:" | sed 's/\^MONSC: //')
     
     local rat=$(echo "$response" | awk -F',' '{print $1}')
-
     case $rat in
-        "NR")
+        "NR"|"NR-5GC")
             network_mode="NR5G-SA Mode"
             nr_mcc=$(echo "$response" | awk -F',' '{print $2}')
             nr_mnc=$(echo "$response" | awk -F',' '{print $3}')
