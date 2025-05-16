@@ -571,6 +571,21 @@
                     "ncm"
                 ]
             },
+            "fm190w-gl": {
+                "manufacturer_id": "2cb7",
+                "manufacturer": "fibocom",
+                "platform": "qualcomm",
+                "data_interface": "usb",
+                "define_connect": "1",
+                "modes": [
+                    "qmi",
+                    "gobinet",
+                    "ecm",
+                    "mbim",
+                    "rndis",
+                    "ncm"
+                ]
+            },
             "nl668": {
                 "manufacturer_id": "1508",
                 "manufacturer": "fibocom",
@@ -1037,6 +1052,15 @@
                 "modes": [
                     "qmi",
                     "mbim"
+                ]
+            },
+            "fm190w-gl": {
+                "manufacturer": "fibocom",
+                "platform": "qualcomm",
+                "data_interface": "pcie",
+                "define_connect": "1",
+                "modes": [
+                    "qmi"
                 ]
             },
             "em9190": {
