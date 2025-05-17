@@ -258,6 +258,9 @@ check_ip()
                     "qualcomm")
                         check_ip_command="AT+CGPADDR=1"
                         ;;
+                    "unisoc")
+                        check_ip_command="AT+CGPADDR=1"
+                        ;;
                 esac
                 ;;
             "neoway")
@@ -854,6 +857,10 @@ at_dial()
             case $platform in
                 "unisoc")
                     at_command='AT$MYUSBNETACT=0,1'
+                    cgdcont_command="AT+CGDCONT=1,\"$pdp_type\",\"$apn\""
+                    ;;
+                "unisoc")
+                    at_command=""
                     cgdcont_command="AT+CGDCONT=1,\"$pdp_type\",\"$apn\""
                     ;;
             esac
