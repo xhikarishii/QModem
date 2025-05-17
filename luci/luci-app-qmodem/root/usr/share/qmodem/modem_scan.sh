@@ -353,6 +353,9 @@ match_config()
 
     #rg200u-cn
     [[ "$name" = *"rg200u-cn"* ]] && name="rg200u-cn"
+    
+    #nu313-m2
+    [[ "$name" = *"nu313-m2"* ]] && name="srm821"
 
     #nari-m601
     [[ "$name" = *"m601"* ]] && name="n510m"
