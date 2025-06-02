@@ -2353,6 +2353,17 @@ static int requestBaseBandVersion(PROFILE_T *profile) {
     {
         uchar2char(profile->BaseBandVersion, sizeof(profile->BaseBandVersion), &revId->RevisionID, le16_to_cpu(revId->TLVLength));
         dbg_time("%s %s", __func__, profile->BaseBandVersion);
+        
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+        // Check if this modem model needs FCC authentication
+        if (strstr(profile->BaseBandVersion, "T99W175")) {
+            profile->needs_fcc_auth = 1;
+            dbg_time("Modem model %s requires FCC authentication", profile->BaseBandVersion);
+        } else {
+            profile->needs_fcc_auth = 0;
+            dbg_time("Modem model %s does not require FCC authentication", profile->BaseBandVersion);
+        }
+#endif
     }
 
     free(pResponse);
