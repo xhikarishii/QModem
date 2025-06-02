@@ -314,6 +314,11 @@ typedef struct _QMI_TLV
 #define QMUX_CTL_FLAG_TYPE_IND      0x04
 #define QMUX_CTL_FLAG_MASK_COMPOUND 0x01
 #define QMUX_CTL_FLAG_MASK_TYPE     0x06 // 00-cmd, 01-rsp, 10-ind
+// Add these definitions to the DMS message types section
+#define QMIDMS_FOXCONN_SET_FCC_AUTH_REQ           0x555C
+#define QMIDMS_FOXCONN_SET_FCC_AUTH_RESP          0x555C
+#define QMIDMS_FOXCONN_SET_FCC_AUTH_V2_REQ        0x555D
+#define QMIDMS_FOXCONN_SET_FCC_AUTH_V2_RESP       0x555D
 
 #pragma pack(pop)
 
