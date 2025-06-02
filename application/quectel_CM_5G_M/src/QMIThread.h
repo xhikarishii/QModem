@@ -250,7 +250,9 @@ typedef struct __PROFILE {
     char old_password[64];
     int old_auth;
     int old_iptype;
-
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+    int needs_fcc_auth;  // Add this field for FCC authentication flag
+#endif
     const struct qmi_device_ops *qmi_ops;
     const struct request_ops *request_ops;
     RMNET_INFO rmnet_info;
