@@ -329,27 +329,26 @@ static int qmi_main(PROFILE_T *profile)
     // Only execute FCC authentication if the modem model requires it
     if (profile->needs_fcc_auth) {
         dbg_time("Executing FCC authentication for modem model: %s", profile->BaseBandVersion);
-        
+        // Check if the fcc auth was successful
+        char fcc_auth_success = 0;
         if (request_ops->requestFoxconnSetFccAuthentication) {
             // Use magic value 0x01 as seen in libqmi
             qmierr = request_ops->requestFoxconnSetFccAuthentication(0x01);
-            if (qmierr) {
-                dbg_time("Foxconn FCC Authentication failed with error: %d", qmierr);
-            } else {
+            if (!qmierr) {
                 dbg_time("Foxconn FCC Authentication successful");
+                fcc_auth_success = 1;
             }
         }
-        
-        if (request_ops->requestFoxconnSetFccAuthenticationV2) {
-            // Based on libqmi, use "FOXCONN" as magic string for Foxconn modems
-            const char *magic_string = "FOXCONN";  // Correct magic string for Foxconn
-            UCHAR magic_number = 0x01;  // Standard magic number from libqmi
-            
-            qmierr = request_ops->requestFoxconnSetFccAuthenticationV2(magic_string, magic_number);
-            if (qmierr) {
-                dbg_time("Foxconn FCC Authentication V2 failed with error: %d", qmierr);
-            } else {
-                dbg_time("Foxconn FCC Authentication V2 successful");
+        if(fcc_auth_success != 1) {
+            if (request_ops->requestFoxconnSetFccAuthenticationV2) {
+                // Based on libqmi, use "FOXCONN" as magic string for Foxconn modems
+                const char *magic_string = "FOXCONN";  // Correct magic string for Foxconn
+                UCHAR magic_number = 0x01;  // Standard magic number from libqmi
+                
+                qmierr = request_ops->requestFoxconnSetFccAuthenticationV2(magic_string, magic_number);
+                if (!qmierr) {
+                    dbg_time("Foxconn FCC Authentication V2 successful");
+                }
             }
         }
     } else {

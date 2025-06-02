@@ -841,6 +841,8 @@ static pthread_mutex_t mbim_command_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t mbim_command_cond = PTHREAD_COND_INITIALIZER;
 static int mbim_ms_version = 1;
 static uint8_t qmi_over_mbim_nas = 0;
+static uint8_t qmi_over_mbim_dms = 0; // Add DMS client ID
+
 int qmi_over_mbim_qmidev_send(PQCQMIMSG pQMI);
 
 static const UUID_T * str2uuid(const char *str) {
@@ -1801,6 +1803,16 @@ static int mbim_device_caps_query(PROFILE_T *profile) {
             wchar2char((const char *)pInfo + le32toh(pInfo->FirmwareInfoOffset), le32toh(pInfo->FirmwareInfoSize), tmp, sizeof(tmp));
             strncpy(profile->BaseBandVersion, tmp, sizeof(profile->BaseBandVersion));
             mbim_debug("FirmwareInfo: %s", tmp);
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+            // Check if this modem model needs FCC authentication
+            if (strstr(profile->BaseBandVersion, "T99W175")) {
+                profile->needs_fcc_auth = 1;
+                mbim_debug("Modem model %s requires FCC authentication", profile->BaseBandVersion);
+            } else {
+                profile->needs_fcc_auth = 0;
+                mbim_debug("Modem model %s does not require FCC authentication", profile->BaseBandVersion);
+            }
+#endif
          }
          if (le32toh(pInfo->HardwareInfoOffset) && le32toh(pInfo->HardwareInfoSize)) {
             wchar2char((const char *)pInfo + le32toh(pInfo->HardwareInfoOffset), le32toh(pInfo->HardwareInfoSize), tmp, sizeof(tmp));
@@ -2187,6 +2199,11 @@ static int mbim_init(PROFILE_T *profile) {
 #ifdef CONFIG_CELLINFO //by now, only this function need QMI OVER MBIM
             qmi_over_mbim_nas = qmi_over_mbim_get_client_id(QMUX_TYPE_NAS);
 #endif
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+            // Get DMS client ID for FCC authentication
+            qmi_over_mbim_dms = qmi_over_mbim_get_client_id(QMUX_TYPE_DMS);
+            mbim_debug("Got DMS client ID: %d for FCC authentication", qmi_over_mbim_dms);
+#endif
         }
     }
 
@@ -2201,7 +2218,12 @@ static int mbim_deinit(void) {
         qmi_over_mbim_release_client_id(QMUX_TYPE_NAS, qmi_over_mbim_nas);
         qmi_over_mbim_nas = 0;
     }
-    
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+    if (qmi_over_mbim_dms) {
+        qmi_over_mbim_release_client_id(QMUX_TYPE_DMS, qmi_over_mbim_dms);
+        qmi_over_mbim_dms = 0;
+    }
+#endif    
     mbim_close_device();
 
     if (qmi_over_mbim_sk[0] != -1) {
@@ -2380,6 +2402,29 @@ static int requestGetCellInfoList(void) {
 }
 #endif
 
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+// Use QMI over MBIM for Foxconn FCC authentication
+static int requestFoxconnSetFccAuthentication(UCHAR magic_value) {
+    if (qmi_over_mbim_support && qmi_request_ops.requestFoxconnSetFccAuthentication) {
+        mbim_debug("%s(magic_value=0x%02x) via QMI over MBIM", __func__, magic_value);
+        return qmi_request_ops.requestFoxconnSetFccAuthentication(magic_value);
+    }
+    
+    mbim_debug("%s: QMI over MBIM not available for FCC auth", __func__);
+    return -ENOTSUP;
+}
+
+static int requestFoxconnSetFccAuthenticationV2(const char *magic_string, UCHAR magic_number) {
+    if (qmi_over_mbim_support && qmi_request_ops.requestFoxconnSetFccAuthenticationV2) {
+        mbim_debug("%s(magic_string='%s', magic_number=0x%02x) via QMI over MBIM", __func__, magic_string, magic_number);
+        return qmi_request_ops.requestFoxconnSetFccAuthenticationV2(magic_string, magic_number);
+    }
+    
+    mbim_debug("%s: QMI over MBIM not available for FCC auth", __func__);
+    return -ENOTSUP;
+}
+#endif
+
 const struct request_ops mbim_request_ops = {
     .requestBaseBandVersion = requestBaseBandVersion,
     .requestGetSIMStatus = requestGetSIMStatus,
@@ -2390,6 +2435,10 @@ const struct request_ops mbim_request_ops = {
     .requestGetIPAddress = requestGetIPAddress,
 #ifdef CONFIG_CELLINFO
     .requestGetCellInfoList = requestGetCellInfoList,
+#endif
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+    .requestFoxconnSetFccAuthentication = requestFoxconnSetFccAuthentication,
+    .requestFoxconnSetFccAuthenticationV2 = requestFoxconnSetFccAuthenticationV2,
 #endif
 };
 
@@ -2402,6 +2451,9 @@ int qmi_over_mbim_qmidev_send(PQCQMIMSG pQMI) {
     if (pQMI->QMIHdr.QMIType != QMUX_TYPE_CTL) {
         if (pQMI->QMIHdr.QMIType == QMUX_TYPE_NAS)
             pQMI->QMIHdr.ClientId = qmi_over_mbim_nas;
+        else if (pQMI->QMIHdr.QMIType == QMUX_TYPE_DMS)
+            pQMI->QMIHdr.ClientId = qmi_over_mbim_dms;
+
 
         if (pQMI->QMIHdr.ClientId == 0) {
             dbg_time("QMIType %d has no clientID", pQMI->QMIHdr.QMIType);
