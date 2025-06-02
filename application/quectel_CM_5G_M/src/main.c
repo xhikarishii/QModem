@@ -329,6 +329,7 @@ static int qmi_main(PROFILE_T *profile)
     // Only execute FCC authentication if the modem model requires it
     if (profile->needs_fcc_auth) {
         dbg_time("Executing FCC authentication for modem model: %s", profile->BaseBandVersion);
+
         // Check if the fcc auth was successful
         char fcc_auth_success = 0;
         if (request_ops->requestFoxconnSetFccAuthentication) {
@@ -349,6 +350,7 @@ static int qmi_main(PROFILE_T *profile)
                 if (!qmierr) {
                     dbg_time("Foxconn FCC Authentication V2 successful");
                 }
+      
             }
         }
     } else {
