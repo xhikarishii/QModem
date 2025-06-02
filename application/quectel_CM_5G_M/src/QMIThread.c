@@ -1832,6 +1832,88 @@ static int requestQueryDataCall(UCHAR  *pConnectionStatus, int curIpFamily) {
     return 0;
 }
 
+// Add these implementations after existing function implementations
+
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+// Make sure these functions are static to avoid symbol conflicts
+static USHORT DmsFoxconnSetFccAuthenticationReq(PQMUX_MSG pMUXMsg, void *arg) {
+    UCHAR magic_value = *((UCHAR *)arg);
+    
+    pMUXMsg->FoxconnSetFccAuthReq.TLVType = 0x01;
+    pMUXMsg->FoxconnSetFccAuthReq.TLVLength = cpu_to_le16(1);
+    pMUXMsg->FoxconnSetFccAuthReq.magic_value = magic_value;
+    
+    return sizeof(QMIDMS_FOXCONN_SET_FCC_AUTH_REQ_MSG);
+}
+
+static USHORT DmsFoxconnSetFccAuthenticationV2Req(PQMUX_MSG pMUXMsg, void *arg) {
+    FOXCONN_FCC_AUTH_V2_T *fcc_auth = (FOXCONN_FCC_AUTH_V2_T *)arg;
+    USHORT TLVLength = 0;
+    UCHAR *pTLV;
+    
+    pTLV = (UCHAR *)(&pMUXMsg->FoxconnSetFccAuthV2Req + 1);
+    
+    // Magic string TLV (0x01)
+    *pTLV++ = 0x01; // TLV Type
+    *(USHORT *)pTLV = cpu_to_le16(strlen(fcc_auth->magic_string));
+    pTLV += 2;
+    memcpy(pTLV, fcc_auth->magic_string, strlen(fcc_auth->magic_string));
+    pTLV += strlen(fcc_auth->magic_string);
+    TLVLength += 3 + strlen(fcc_auth->magic_string);
+    
+    // Magic number TLV (0x02)
+    *pTLV++ = 0x02; // TLV Type
+    *(USHORT *)pTLV = cpu_to_le16(1);
+    pTLV += 2;
+    *pTLV++ = fcc_auth->magic_number;
+    TLVLength += 4;
+    
+    return sizeof(QMIDMS_FOXCONN_SET_FCC_AUTH_V2_REQ_MSG) + TLVLength;
+}
+
+// These functions should NOT be static since they're used externally
+int requestFoxconnSetFccAuthentication(UCHAR magic_value) {
+    PQCQMIMSG pRequest;
+    PQCQMIMSG pResponse;
+    PQMUX_MSG pMUXMsg;
+    int err;
+
+    dbg_time("%s(magic_value=0x%02x)", __func__, magic_value);
+
+    pRequest = ComposeQMUXMsg(QMUX_TYPE_DMS, QMIDMS_FOXCONN_SET_FCC_AUTH_REQ, DmsFoxconnSetFccAuthenticationReq, &magic_value);
+    err = QmiThreadSendQMI(pRequest, &pResponse);
+    qmi_rsp_check_and_return();
+
+    free(pResponse);
+    return 0;
+}
+
+int requestFoxconnSetFccAuthenticationV2(const char *magic_string, UCHAR magic_number) {
+    PQCQMIMSG pRequest;
+    PQCQMIMSG pResponse;
+    PQMUX_MSG pMUXMsg;
+    int err;
+    FOXCONN_FCC_AUTH_V2_T fcc_auth;
+
+    dbg_time("%s(magic_string='%s', magic_number=0x%02x)", __func__, magic_string, magic_number);
+    
+    if (!magic_string || strlen(magic_string) >= sizeof(fcc_auth.magic_string)) {
+        dbg_time("%s: Invalid magic_string", __func__);
+        return -1;
+    }
+
+    strcpy(fcc_auth.magic_string, magic_string);
+    fcc_auth.magic_number = magic_number;
+
+    pRequest = ComposeQMUXMsg(QMUX_TYPE_DMS, QMIDMS_FOXCONN_SET_FCC_AUTH_V2_REQ, DmsFoxconnSetFccAuthenticationV2Req, &fcc_auth);
+    err = QmiThreadSendQMI(pRequest, &pResponse);
+    qmi_rsp_check_and_return();
+
+    free(pResponse);
+    return 0;
+}
+#endif
+
 static int requestSetupDataCall(PROFILE_T *profile, int curIpFamily) {
     PQCQMIMSG pRequest;
     PQCQMIMSG pResponse;
@@ -2271,6 +2353,17 @@ static int requestBaseBandVersion(PROFILE_T *profile) {
     {
         uchar2char(profile->BaseBandVersion, sizeof(profile->BaseBandVersion), &revId->RevisionID, le16_to_cpu(revId->TLVLength));
         dbg_time("%s %s", __func__, profile->BaseBandVersion);
+        
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+        // Check if this modem model needs FCC authentication
+        if (strstr(profile->BaseBandVersion, "T99W175")) {
+            profile->needs_fcc_auth = 1;
+            dbg_time("Modem model %s requires FCC authentication", profile->BaseBandVersion);
+        } else {
+            profile->needs_fcc_auth = 0;
+            dbg_time("Modem model %s does not require FCC authentication", profile->BaseBandVersion);
+        }
+#endif
     }
 
     free(pResponse);
@@ -2554,6 +2647,10 @@ const struct request_ops qmi_request_ops = {
 #endif
 #ifdef CONFIG_COEX_WWAN_STATE
     .requestGetCoexWWANState = requestGetCoexWWANState,
+#endif
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+    .requestFoxconnSetFccAuthentication = requestFoxconnSetFccAuthentication,
+    .requestFoxconnSetFccAuthenticationV2 = requestFoxconnSetFccAuthenticationV2,
 #endif
 };
 

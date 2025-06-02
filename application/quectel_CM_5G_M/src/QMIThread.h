@@ -20,6 +20,7 @@
 //#define CONFIG_REG_QOS_IND
 //#define CONFIG_GET_QOS_INFO
 //#define CONFIG_GET_QOS_DATA_RATE
+#define CONFIG_FOXCONN_FCC_AUTH
 
 #if (defined(CONFIG_REG_QOS_IND) || defined(CONFIG_GET_QOS_INFO) || defined(CONFIG_GET_QOS_DATA_RATE))
 #ifndef CONFIG_REG_QOS_IND
@@ -344,7 +345,20 @@ struct request_ops {
     int (*requestRegisterQos)(PROFILE_T *profile);
     int (*requestGetQosInfo)(PROFILE_T *profile);
     int (*requestGetCoexWWANState)(void);
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+    int (*requestFoxconnSetFccAuthentication)(UCHAR magic_value);
+    int (*requestFoxconnSetFccAuthenticationV2)(const char *magic_string, UCHAR magic_number);
+#endif
 };
+
+// Add structure for V2 parameters
+#ifdef CONFIG_FOXCONN_FCC_AUTH
+typedef struct {
+    char magic_string[256];
+    UCHAR magic_number;
+} FOXCONN_FCC_AUTH_V2_T;
+#endif
+
 extern const struct request_ops qmi_request_ops;
 extern const struct request_ops mbim_request_ops;
 extern const struct request_ops atc_request_ops;
