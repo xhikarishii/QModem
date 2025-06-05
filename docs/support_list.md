@@ -60,6 +60,7 @@ Model | Platform | USB  | PCIe
 srm815 | qualcomm |✔ usb(ecm,rndis,ncm) | ✘
 srm825 | qualcomm |✔ usb(ecm,rndis,ncm) | ✘
 srm825n | qualcomm |✔ usb(ecm,rndis,ncm) | ✘
+srm821 | unisoc |✔ usb(ecm,rndis,ncm) | ✘
 
 # sierra
 Model | Platform | USB  | PCIe 
