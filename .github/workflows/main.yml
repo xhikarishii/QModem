@@ -201,7 +201,7 @@ jobs:
           done
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@@v2.2.2
         if: ${{ needs.job_prepare.outputs.push_type == 'tag' }}
         with:
           body_path: release_note/release_note.md
