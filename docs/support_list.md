@@ -5,6 +5,7 @@ em05 | lte |✔ usb(qmi,ecm,mbim,rndis) | ✘
 ep06 | lte |✔ usb(qmi,ecm,mbim,rndis) | ✘
 em12 | lte |✔ usb(qmi,ecm,mbim,rndis) | ✘
 em120k | lte12 |✔ usb(qmi,ecm,mbim,rndis) | ✘
+em160r-gl | lte12 |✔ usb(qmi,ecm,mbim,rndis) | ✘
 rg200u-cn | unisoc |✔ usb(ecm,mbim,rndis,ncm) | ✘
 rg801 | hisilicon |✔ usb(ecm,rndis,ncm) | ✘
 rm500u-cn | unisoc |✔ usb(ecm,mbim,rndis,ncm) | ✘
