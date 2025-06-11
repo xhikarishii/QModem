@@ -23,11 +23,6 @@ function set_imei(){
 function get_mode(){
     cfg=$(at $at_port "AT^SETMODE?")
     local mode_num=`echo -e "$cfg" | sed -n '2p' | sed 's/\r//g'`
-    
-    if [ -z "$mode_num" ]; then
-       echo "unknown"
-       return
-    fi
 
     case "$mode_num" in
         "0"|"2") mode="ecm" ;;
@@ -35,7 +30,7 @@ function get_mode(){
         "6") mode="rndis" ;;
         "7") mode="mbim" ;;
         "8") mode="ppp" ;;
-        *) mode="$mode_num" ;;
+        *) mode="rndis" ;;
     esac
     
     available_modes=$(uci -q get qmodem.$config_section.modes)

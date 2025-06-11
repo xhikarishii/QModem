@@ -295,7 +295,7 @@ scan_usb_slot_interfaces()
             ;;
             qmi_wwan*|\
             cdc_mbim|\
-            cdc_ncm|\
+            *cdc_ncm|\
             cdc_ether|\
             rndis_host)
                 net_path="$slot_path/$interface/net"
