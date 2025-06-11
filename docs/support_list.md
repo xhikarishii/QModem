@@ -1,3 +1,10 @@
+# huawei
+Model | Platform | USB  | PCIe 
+--- | --- | --- | ---
+s10 | hisilicon |✔ usb(rndis) | ✘
+mt5700m-cn | hisilicon |✔ usb(ecm,ncm) | ✘
+mh5000-31 | hisilicon |✔ usb(ecm) | ✘
+
 # quectel
 Model | Platform | USB  | PCIe 
 --- | --- | --- | ---
@@ -33,12 +40,6 @@ ec20f | lte |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
 ec25 | lte |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
 ec21 | lte |✔ usb(qmi,gobinet,ecm,mbim,rndis,ncm) | ✘
 ec200a | lte |✔ usb(ecm,mbim,rndis,ncm) | ✘
-
-# huawei
-Model | Platform | USB  | PCIe 
---- | --- | --- | ---
-mt5700m-cn | hisilicon |✔ usb(ecm,ncm) | ✘
-mh5000-31 | hisilicon |✔ usb(ecm) | ✘
 
 # fibocom
 Model | Platform | USB  | PCIe 
