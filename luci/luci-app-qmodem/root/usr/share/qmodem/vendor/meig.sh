@@ -567,9 +567,9 @@ cell_info()
         add_plain_info_entry "TAC" "$nr_tac" "Tracking area code"
         add_plain_info_entry "Band" "$nr_band" "Band"
         add_plain_info_entry "DL Bandwidth" "$nr_dl_bandwidth" "DL Bandwidth"
-        add_bar_info_entry "RSRP" "$nr_rsrp" "Reference Signal Received Power" -187 -29 dBm
-        add_bar_info_entry "RSRQ" "$nr_rsrq" "Reference Signal Received Quality" -43 20 dBm
-        add_bar_info_entry "SINR" "$nr_sinr" "Signal to Interference plus Noise Ratio" -23 40 dB
+        add_bar_info_entry "RSRP" "$nr_rsrp" "Reference Signal Received Power" -140 -44 dBm
+        add_bar_info_entry "RSRQ" "$nr_rsrq" "Reference Signal Received Quality" -19.5 -3 dB
+        add_bar_info_entry "SINR" "$nr_sinr" "Signal to Interference plus Noise Ratio" 0 30 dB
         add_plain_info_entry "SCS" "$nr_scs" "SCS"
         ;;
     "EN-DC Mode")
@@ -584,8 +584,8 @@ cell_info()
         add_plain_info_entry "UL Bandwidth" "$endc_lte_ul_bandwidth" "UL Bandwidth"
         add_plain_info_entry "DL Bandwidth" "$endc_lte_dl_bandwidth" "DL Bandwidth"
         add_bar_info_entry "RSRP" "$endc_lte_rsrp" "Reference Signal Received Power" -140 -44 dBm
-        add_bar_info_entry "RSRQ" "$endc_lte_rsrq" "Reference Signal Received Quality" -20 20 dBm
-        add_bar_info_entry "SINR" "$endc_lte_sinr" "Signal to Interference plus Noise Ratio" -23 40 dB
+        add_bar_info_entry "RSRQ" "$endc_lte_rsrq" "Reference Signal Received Quality" -19.5 -3 dB
+        add_bar_info_entry "SINR" "$endc_lte_sinr" "Signal to Interference plus Noise Ratio" 0 30 dB
         add_plain_info_entry "TX Power" "$endc_lte_tx_power" "TX Power"
         if [ -n "$endc_nr_physical_cell_id" ] || [ -n "$endc_nr_band" ]; then
             add_plain_info_entry "NR5G-NSA" "NR5G-NSA" ""
@@ -594,9 +594,9 @@ cell_info()
             [ -n "$endc_nr_physical_cell_id" ] && add_plain_info_entry "Physical Cell ID" "$endc_nr_physical_cell_id" "Physical Cell ID"
             [ -n "$endc_nr_band" ] && add_plain_info_entry "Band" "$endc_nr_band" "Band"
             [ -n "$endc_nr_dl_bandwidth" ] && add_plain_info_entry "DL Bandwidth" "$endc_nr_dl_bandwidth" "DL Bandwidth"
-            [ -n "$endc_nr_rsrp" ] && add_bar_info_entry "RSRP" "$endc_nr_rsrp" "Reference Signal Received Power" -187 -29 dBm
-            [ -n "$endc_nr_rsrq" ] && add_bar_info_entry "RSRQ" "$endc_nr_rsrq" "Reference Signal Received Quality" -43 20 dBm
-            [ -n "$endc_nr_sinr" ] && add_bar_info_entry "SINR" "$endc_nr_sinr" "Signal to Interference plus Noise Ratio" -23 40 dB
+            [ -n "$endc_nr_rsrp" ] && add_bar_info_entry "RSRP" "$endc_nr_rsrp" "Reference Signal Received Power" -140 -44 dBm
+            [ -n "$endc_nr_rsrq" ] && add_bar_info_entry "RSRQ" "$endc_nr_rsrq" "Reference Signal Received Quality" -19.5 -3 dB
+            [ -n "$endc_nr_sinr" ] && add_bar_info_entry "SINR" "$endc_nr_sinr" "Signal to Interference plus Noise Ratio" 0 30 dB
             [ -n "$endc_nr_scs" ] && add_plain_info_entry "SCS" "$endc_nr_scs" "SCS"
         fi
         ;;
@@ -611,8 +611,8 @@ cell_info()
         add_plain_info_entry "UL Bandwidth" "$lte_ul_bandwidth" "UL Bandwidth"
         add_plain_info_entry "DL Bandwidth" "$lte_dl_bandwidth" "DL Bandwidth"
         add_bar_info_entry "RSRP" "$lte_rsrp" "Reference Signal Received Power" -140 -44 dBm
-        add_bar_info_entry "RSRQ" "$lte_rsrq" "Reference Signal Received Quality" -20 20 dBm
-        add_bar_info_entry "SINR" "$lte_sinr" "Signal to Interference plus Noise Ratio" -23 40 dB
+        add_bar_info_entry "RSRQ" "$lte_rsrq" "Reference Signal Received Quality" -19.5 -3 dB
+        add_bar_info_entry "SINR" "$lte_sinr" "Signal to Interference plus Noise Ratio" 0 30 dB
         [ -n "$lte_tx_power" ] && add_plain_info_entry "TX Power" "$lte_tx_power" "TX Power"
         ;;
     "WCDMA Mode")

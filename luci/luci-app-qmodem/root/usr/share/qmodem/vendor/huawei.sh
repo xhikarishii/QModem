@@ -626,31 +626,17 @@ for line in $data;do
         continue
         ;;
     *SINR*)
-        add_bar_info_entry "SINR" "$value" "$key" -23 40 dB
+        add_bar_info_entry "SINR" "$value" "$key" 0 30 dB
         ;;
     *RSRP*)
-        case $key in
-        *NR5G*)
-            add_bar_info_entry "NR5G RSRP" "$value" "$key" -187 -29 dBm
-            ;;
-        *)
-            add_bar_info_entry "RSRP" "$value" "$key" -140 -44 dBm
-            ;;
-        esac
+        add_bar_info_entry "RSRP" "$value" "$key" -140 -44 dBm
         ;;
     *RSRQ*)
-        case $key in
-        *NR5G*)
-            add_bar_info_entry "NR5G RSRQ" "$value" "$key" -43 20 dBm
-            ;;
-        *)
-            add_bar_info_entry "RSRQ" "$value" "$key" -20 20 dBm
-            ;;
-        esac
+        add_bar_info_entry "RSRQ" "$value" "$key" -19.5 -3 dB
         ;;
     *RSSI*)
-            add_bar_info_entry "RSSI" "$value" "$key" -140 -44 dBm
-            ;;
+        add_bar_info_entry "RSSI" "$value" "$key" -120 -20 dBm
+        ;;
     *)
         add_plain_info_entry $key $value $key
         ;;

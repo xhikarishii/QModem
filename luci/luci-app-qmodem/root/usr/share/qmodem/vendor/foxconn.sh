@@ -1,8 +1,10 @@
 #!/bin/sh
 # Copyright (C) 2025 x-shark
-
+_Vendor="foxconn"
+_Author="x-shark"
+_Maintainer="x-shark <unknown>"
 source /usr/share/qmodem/generic.sh
-debug_subject="quectel_ctrl"
+debug_subject="foxconn_ctrl"
 
 name=$(uci -q get qmodem.$config_section.name)
 case "$name" in
@@ -55,15 +57,15 @@ function get_mode(){
     config_type=`echo -e "$cfg" | grep -o '[0-9]'`
     if [ "$config_type" = "1" ]; then
         mode_num="0"
-	json_add_int disable_mode_btn 1
+    json_add_int disable_mode_btn 1
 
     else
-      	ucfg=$(at $at_port $at_pre"USBSWITCH?")
-      	config_type=$(echo "$ucfg" | grep USBSWITCH: |cut -d':' -f2|xargs)
-      	if [ "$config_type" = "9025" ]; then
-        	 mode_num="1"
-      	elif [ "$config_type" = "90D5" ]; then
-         	mode_num="0"
+          ucfg=$(at $at_port $at_pre"USBSWITCH?")
+          config_type=$(echo "$ucfg" | grep USBSWITCH: |cut -d':' -f2|xargs)
+          if [ "$config_type" = "9025" ]; then
+             mode_num="1"
+          elif [ "$config_type" = "90D5" ]; then
+             mode_num="0"
         fi
     fi
     case "$platform" in
@@ -232,7 +234,7 @@ function sim_info()
 
     #SIM Status（SIM状态）
     at_command="AT+CPIN?"
-	sim_status=$(at $at_port $at_command | grep "+CPIN:")
+    sim_status=$(at $at_port $at_command | grep "+CPIN:")
     sim_status=${sim_status:7:-1}
     #lowercase
     sim_status=$(echo $sim_status | tr  A-Z a-z)
@@ -254,15 +256,15 @@ function sim_info()
     fi
 
     at_command="AT+CNUM"
-	sim_number=$(at $at_port $at_command | awk -F'"' '{print $2}'|xargs)
+    sim_number=$(at $at_port $at_command | awk -F'"' '{print $2}'|xargs)
 
     #IMSI（国际移动用户识别码）
     at_command="AT+CIMI"
-	imsi=$(at $at_port $at_command | sed -n '2p' | sed 's/\r//g')
+    imsi=$(at $at_port $at_command | sed -n '2p' | sed 's/\r//g')
 
     #ICCID（集成电路卡识别码）
     at_command="AT+ICCID"
-	iccid=$(at $at_port $at_command | sed -n '2p' | sed 's/\r//g'|sed 's/[^0-9]*//g')
+    iccid=$(at $at_port $at_command | sed -n '2p' | sed 's/\r//g'|sed 's/[^0-9]*//g')
     case "$sim_status" in
         "ready")
             add_plain_info_entry "SIM Status" "$sim_status" "SIM Status" 
@@ -420,7 +422,7 @@ set_lockband_nr(){
     #lock_band=$(echo $lock_band | tr ',' ':')
     case "$band_class" in
         "UMTS") 
-	    lock_band=$(echo $lock_band)
+        lock_band=$(echo $lock_band)
             at_command=$at_pre"BAND_PREF=WCDMA,2,$lock_band"
             res=$(at $at_port $at_command)
             ;;
@@ -527,6 +529,24 @@ function _band_list_to_mask()
     echo "$low,$high"
 }
 
+function process_signal_value() {
+    local value="$1"
+    local numbers=$(echo "$value" | grep -oE '[-+]?[0-9]+(\.[0-9]+)?')
+    local count=0
+    local total=0
+
+    for num in $numbers; do
+        total=$(echo "$total + $num" | bc -l)
+        count=$((count+1))
+    done
+
+    if [ $count -gt 0 ]; then
+        echo "scale=2; $total / $count" | bc -l | sed 's/^\./0./' | sed 's/^-\./-0./'
+    else
+        echo ""
+    fi
+}
+
 cell_info(){
     class="Cell Information"
     at_command=$at_pre"debug?"
@@ -536,19 +556,21 @@ cell_info(){
 
     case $network_mode in
     "LTE")
-    	lte_mcc=$(echo "$response"|awk -F'mcc:' '{print $2}'|awk -F',' '{print $1}'|xargs)
-    	lte_mnc=$(echo "$response"|awk -F'mnc:' '{print $2}'|xargs)
-    	lte_earfcn=$(echo "$response"|awk -F'channel:' '{print $2}'|awk -F' ' '{print $1}'|xargs)
-    	lte_physical_cell_id=$(echo "$response"|awk -F'pci:' '{print $2}'|awk -F' ' '{print $1}'|xargs)
-    	lte_cell_id=$(echo "$response"|awk -F'lte_cell_id:' '{print $2}'|xargs)
-    	lte_band=$(echo "$response"|awk -F'lte_band:' '{print $2}'|awk -F' ' '{print $1}'|xargs)
-    	lte_freq_band_ind=$(echo "$response"|awk -F'lte_band_width:' '{print $2}'|xargs)
-    	lte_sinr=$(echo "$response"|awk -F'lte_snr:' '{print $2}'|awk '{print $1}'|sed -n 's/[^0-9.-]*\([+-]*[0-9]*\.[0-9]*\)[^0-9.-]*/\1/p'|xargs)
-    	lte_rsrq=$(echo "$response"|awk -F'rsrq:' '{print $2}'|sed -n 's/[^0-9.-]*\([+-]*[0-9]*\.[0-9]*\)[^0-9.-]*/\1/p'|xargs)
-    	lte_rssi=$(echo "$response"|awk -F'lte_rssi:' '{print $2}'|awk -F',' '{print $1}'|sed -n 's/[^0-9.-]*\([+-]*[0-9]*\.[0-9]*\)[^0-9.-]*/\1/p'|xargs)
-    	#lte_rssnr=$(echo "$response"|
-    	lte_tac=$(echo "$response"|awk -F'lte_tac:' '{print $2}'|xargs)
-    	lte_tx_power=$(echo "$response"|awk -F'lte_tx_pwr:' '{print $2}'|xargs)
+        lte_mcc=$(echo "$response"|awk -F'mcc:' '{print $2}'|awk -F',' '{print $1}'|xargs)
+        lte_mnc=$(echo "$response"|awk -F'mnc:' '{print $2}'|xargs)
+        lte_earfcn=$(echo "$response"|awk -F'channel:' '{print $2}'|awk -F' ' '{print $1}'|xargs)
+        lte_physical_cell_id=$(echo "$response"|awk -F'pci:' '{print $2}'|awk -F' ' '{print $1}'|xargs)
+        lte_cell_id=$(echo "$response"|awk -F'lte_cell_id:' '{print $2}'|xargs)
+        lte_band=$(echo "$response"|awk -F'lte_band:' '{print $2}'|awk -F' ' '{print $1}'|xargs)
+        lte_freq_band_ind=$(echo "$response"|awk -F'lte_band_width:' '{print $2}'|xargs)
+        lte_sinr=$(echo "$response"|awk -F'lte_snr:' '{print $2}'|awk '{print $1}'|xargs)
+        lte_sinr=$(process_signal_value "$lte_sinr")
+        lte_rsrq=$(echo "$response"|awk -F'rsrq:' '{print $2}'|xargs)
+        lte_rsrq=$(process_signal_value "$lte_rsrq")
+        lte_rssi=$(echo "$response"|awk -F'lte_rssi:' '{print $2}'|awk -F',' '{print $1}'|xargs)
+        lte_rssi=$(process_signal_value "$lte_rssi")
+        lte_tac=$(echo "$response"|awk -F'lte_tac:' '{print $2}'|xargs)
+        lte_tx_power=$(echo "$response"|awk -F'lte_tx_pwr:' '{print $2}'|xargs)
 
         add_plain_info_entry "MCC" "$lte_mcc" "Mobile Country Code"
         add_plain_info_entry "MNC" "$lte_mnc" "Mobile Network Code"
@@ -561,9 +583,9 @@ cell_info(){
         #add_plain_info_entry "UL Bandwidth" "$lte_ul_bandwidth" "UL Bandwidth"
         #add_plain_info_entry "DL Bandwidth" "$lte_dl_bandwidth" "DL Bandwidth"
         add_plain_info_entry "TAC" "$lte_tac" "Tracking area code of cell served by neighbor Enb"
-        add_bar_info_entry "RSRQ" "$lte_rsrq" "Reference Signal Received Quality" -20 20 dBm 
-        add_bar_info_entry "RSSI" "$lte_rssi" "Received Signal Strength Indicator" -120 -44 dBm
-        add_bar_info_entry "SINR" "$lte_sinr" "Signal to Interference plus Noise Ratio Bandwidth" -23 40 dB
+        add_bar_info_entry "RSRQ" "$lte_rsrq" "Reference Signal Received Quality" -19.5 -3 dB
+        add_bar_info_entry "RSSI" "$lte_rssi" "Received Signal Strength Indicator" -120 -20 dBm
+        add_bar_info_entry "SINR" "$lte_sinr" "Signal to Interference plus Noise Ratio Bandwidth" 0 30 dB
         #add_plain_info_entry "RxLev" "$lte_rxlev" "Received Signal Level"
         add_plain_info_entry "RSSNR" "$lte_rssnr" "Radio Signal Strength Noise Ratio"
         #add_plain_info_entry "CQI" "$lte_cql" "Channel Quality Indicator"
@@ -583,10 +605,15 @@ cell_info(){
         nr_band_width=$(echo "$response"|awk -F'nr_band_width:' '{print $2}'|awk -F' ' '{print $1}'|xargs)
         nr_freq_band_ind=$(echo "$response"|awk -F'lte_band_width:' '{print $2}'|xargs)
         nr_sinr=$(echo "$response"|awk -F'nr_snr:' '{print $2}'|awk '{print $1}'|xargs)
+        nr_sinr=$(process_signal_value "$nr_sinr")
         nr_rsrq=$(echo "$response"|awk -F'rsrq:' '{print $2}'|xargs)
+        nr_rsrq=$(process_signal_value "$nr_rsrq")
         nr_rsrp=$(echo "$response"|awk -F'rsrp:' '{print $2}'|awk '{print $1}'|xargs)
+        nr_rsrp=$(process_signal_value "$nr_rsrp")
         nr_rssi=$(echo "$response"|awk -F'nr_rssi:' '{print $2}'|awk -F',' '{print $1}'|xargs)
+        nr_rssi=$(process_signal_value "$nr_rssi")
         nr_tac=$(echo "$response"|awk -F'nr_tac:' '{print $2}'|xargs)
+        nr_tx_power=$(echo "$response"|awk -F'nr_tx_pwr:' '{print $2}'|xargs)
 
         if [ "$has_ca" -gt 0 ]; then
             nr_display_mode="NR5G_SA-CA"
@@ -609,10 +636,9 @@ cell_info(){
         add_plain_info_entry "EARFCN" "$nr_earfcn" "E-UTRA Absolute Radio Frequency Channel Number"
         add_plain_info_entry "Freq band indicator" "$nr_freq_band_ind" "Freq band indicator"
         add_plain_info_entry "TAC" "$nr_tac" "Tracking area code of cell served by neighbor Enb"
-        add_bar_info_entry "RSRQ" "$nr_rsrq" "Reference Signal Received Quality" -43 20 dBm
-        add_bar_info_entry "RSRP" "$nr_rsrp" "Reference Signal Received Power" -187 -29 dBm
-        add_bar_info_entry "SINR" "$nr_sinr" "Signal to Interference plus Noise Ratio Bandwidth" -23 40 dB
-        add_plain_info_entry "RSSNR" "$nr_rssnr" "Radio Signal Strength Noise Ratio"
+        add_bar_info_entry "RSRQ" "$nr_rsrq" "Reference Signal Received Quality" -19.5 -3 dB
+        add_bar_info_entry "RSRP" "$nr_rsrp" "Reference Signal Received Power" -140 -44 dBm
+        add_bar_info_entry "SINR" "$nr_sinr" "Signal to Interference plus Noise Ratio Bandwidth" 0 30 dB
         add_plain_info_entry "TX Power" "$nr_tx_power" "TX Power"
         ;;
     esac
