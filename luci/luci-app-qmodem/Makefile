@@ -12,7 +12,7 @@ PKG_LINCESE_FILES:=LICENSE
 PKG_MAINTAINER:=Tom <fjrcn@outlook.com>
 LUCI_DEPENDS:=+luci-compat \
 		+kmod-usb2 +kmod-usb3 \
-		+kmod-usb-serial +kmod-usb-serial-option  +kmod-usb-serial-qualcomm \
+		+kmod-usb-serial +kmod-usb-serial-option +kmod-usb-serial-qualcomm \
 		+kmod-usb-net +kmod-usb-acm \
 		+kmod-usb-wdm \
 		+kmod-usb-net-cdc-ether \
@@ -34,7 +34,8 @@ LUCI_DEPENDS:=+luci-compat \
 		+PACKAGE_luci-app-qmodem_USING_NORMAL_QUECTEL_CM:quectel-cm \
 		+tom_modem \
 		+jq +bc\
-		+coreutils +coreutils-stat
+		+coreutils +coreutils-stat \
+		+ndisc6
 
 define Package/luci-app-qmodem/conffiles
 /etc/config/qmodem

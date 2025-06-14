@@ -28,15 +28,13 @@ define Build/Prepare
 	$(CP) src/* $(PKG_BUILD_DIR)/
 endef
 
-
 define Build/Compile
-	
 	$(MAKE) -C $(PKG_BUILD_DIR) \
 		$(TARGET_CONFIGURE_OPTS) CFLAGS="$(TARGET_CFLAGS)"
 endef
 
 define Package/$(PKG_NAME)/install
-  $(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/tom_modem $(1)/usr/bin/
 endef
 

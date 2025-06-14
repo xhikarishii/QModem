@@ -1,15 +1,30 @@
 #!/bin/sh
-# Copyright (C) 2025 Fujr <fjrcn@outlook.com>
+# Copyright (C) 2025 sfwtw
 _Vendor="neoway"
-_Author="Fujr"
-_Maintainer="Fujr <fjrcn@outlook.com>"
+_Author="sfwtw"
+_Maintainer="sfwtw <unknown>"
 source /usr/share/qmodem/generic.sh
 debug_subject="neoway_ctrl"
 
 vendor_get_disabled_features(){
     json_add_string "" "NeighborCell"
-    json_add_string "" "IMEI"
     json_add_string "" "DialMode"
+}
+
+get_imei(){
+    at_command="AT+CGSN"
+    imei=$(at $at_port $at_command | grep -o "[0-9]\{15\}")
+    json_add_string "imei" "$imei"
+}
+
+set_imei(){
+    local imei="$1"
+    at_command="AT+SPIMEI=0,\"$imei\""
+    res=$(at $at_port $at_command)
+    json_select "result"
+    json_add_string "set_imei" "$res"
+    json_close_object
+    get_imei
 }
 
 #获取网络偏好
@@ -218,6 +233,30 @@ sim_info()
     esac
 }
 
+rate_convert()
+{
+    #check if bc is installed
+    is_bc_installed=$(which bc)
+    local rate=$1
+    rate_units="Kbps Mbps Gbps Tbps"
+    if [ -z "$is_bc_installed" ]; then
+        for i in $(seq 0 3); do
+            if [ $rate -lt 1024 ]; then
+                break
+            fi
+            rate=$(($rate / 1024))
+        done
+    else
+        for i in $(seq 0 3); do
+            if [ $(echo "$rate < 1024" | bc) -eq 1 ]; then
+                break
+            fi
+            rate=$(echo "scale=2; $rate / 1024" | bc)
+        done
+    fi
+    echo "$rate `echo $rate_units | cut -d ' ' -f $(($i+1))`"
+}
+
 #网络信息
 network_info()
 {
@@ -240,8 +279,8 @@ network_info()
         ambr_ul=$(echo "$response" | awk -F',' '{print $8}' | sed 's/\r//g')
 
         # Convert kbit/s to Mbit/s for display if values exist
-        [ -n "$ambr_dl" ] && ambr_dl=$(awk "BEGIN { printf \"%.2f\", $ambr_dl/1000 }")
-        [ -n "$ambr_ul" ] && ambr_ul=$(awk "BEGIN { printf \"%.2f\", $ambr_ul/1000 }")
+        [ -n "$ambr_dl" ] && ambr_dl=$(rate_convert $ambr_dl)
+        [ -n "$ambr_ul" ] && ambr_ul=$(rate_convert $ambr_ul)
     fi
 
     class="Network Information"
@@ -527,7 +566,6 @@ cell_info()
     response=$(at $at_port $at_command)
     
     if [ -n "$(echo "$response" | grep "+NETDMSGEX:")" ]; then
-        m_debug "Using Neoway AT+NETDMSGEX command"
 
         net_mode=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $1}' | sed 's/+NETDMSGEX: "//g' | sed 's/"//g')
         network_mode=$(get_network_mode "$net_mode")
@@ -536,31 +574,24 @@ cell_info()
         mcc=$(echo "$mcc_mnc" | cut -d'+' -f1)
         mnc=$(echo "$mcc_mnc" | cut -d'+' -f2)
 
-        band=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $3}' | sed 's/LTE BAND //g' | sed 's/NR BAND //g')
+        band=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $3}' | sed 's/"//g')
 
-        arfcn=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $4}')
+        arfcn=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $4}' | sed 's/\r//g')
         
         case "$net_mode" in
             "NR to 5GCN"|"NR to EPS"|"NR-LTE ENDC"|"NR-LTE NEDC")
 
-                gnbid=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $5}')
-                pci=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $6}')
-                ss_rsrp=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $7}')
-                ss_rsrq=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $8}')
-                ss_sinr=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $9}')
+                gnbid=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $5}' | sed 's/\r//g')
+                pci=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $6}' | sed 's/\r//g')
+                ss_rsrp=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $7}' | sed 's/\r//g')
+                ss_rsrq=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $8}' | sed 's/\r//g')
+                ss_sinr=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $9}' | sed 's/\r//g')
 
-                if [ "$(echo "$response" | grep -o ',' | wc -l)" -ge 12 ]; then
-                    csi_rsrp=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $10}')
-                    csi_rsrq=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $11}')
-                    csi_sinr=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $12}' | sed 's/\r//g')
-                fi
-
-                [ -n "$ss_rsrp" ] && ss_rsrp_actual=$(awk "BEGIN { printf \"%.1f\", $ss_rsrp/10 }")
-                [ -n "$ss_rsrq" ] && ss_rsrq_actual=$(awk "BEGIN { printf \"%.1f\", $ss_rsrq/10 }")
-                [ -n "$ss_sinr" ] && ss_sinr_actual=$(awk "BEGIN { printf \"%.1f\", $ss_sinr/10 }")
-                [ -n "$csi_rsrp" ] && csi_rsrp_actual=$(awk "BEGIN { printf \"%.1f\", $csi_rsrp/10 }")
-                [ -n "$csi_rsrq" ] && csi_rsrq_actual=$(awk "BEGIN { printf \"%.1f\", $csi_rsrq/10 }")
-                [ -n "$csi_sinr" ] && csi_sinr_actual=$(awk "BEGIN { printf \"%.1f\", $csi_sinr/10 }")
+                [ -n "$ss_rsrp" ] && ss_rsrp_actual=$(printf "%.1f" $(echo "$ss_rsrp / 10" | bc -l 2>/dev/null))
+                
+                [ -n "$ss_rsrq" ] && ss_rsrq_actual=$(printf "%.1f" $(echo "$ss_rsrq / 10" | bc -l 2>/dev/null))
+                
+                [ -n "$ss_sinr" ] && ss_sinr_actual=$(printf "%.1f" $(echo "$ss_sinr / 10" | bc -l 2>/dev/null))
 
                 network_mode="NR5G-SA Mode"
                 nr_mcc="$mcc"
@@ -587,9 +618,6 @@ cell_info()
                 rssi=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $13}')
 
                 if [ "$(echo "$response" | grep -o ',' | wc -l)" -ge 17 ]; then
-                    srxlev=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $14}')
-                    squal=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $15}')
-                    cqi=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $16}')
                     dl_bw_num=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $17}')
                     ul_bw_num=$(echo "$response" | grep "+NETDMSGEX:" | awk -F',' '{print $18}' | sed 's/\r//g')
 
@@ -597,10 +625,13 @@ cell_info()
                     ul_bandwidth=$(get_bandwidth "LTE" "$ul_bw_num")
                 fi
 
-                [ -n "$rsrp" ] && rsrp_actual=$(awk "BEGIN { printf \"%.1f\", $rsrp/10 }")
-                [ -n "$rsrq" ] && rsrq_actual=$(awk "BEGIN { printf \"%.1f\", $rsrq/10 }")
-                [ -n "$sinr" ] && sinr_actual=$(awk "BEGIN { printf \"%.1f\", $sinr/10 }")
-                [ -n "$rssi" ] && rssi_actual=$(awk "BEGIN { printf \"%.1f\", $rssi/10 }")
+                [ -n "$rsrp" ] && rsrp_actual=$(printf "%.1f" $(echo "$rsrp / 10" | bc -l 2>/dev/null))
+                
+                [ -n "$rsrq" ] && rsrq_actual=$(printf "%.1f" $(echo "$rsrq / 10" | bc -l 2>/dev/null))
+                
+                [ -n "$sinr" ] && sinr_actual=$(printf "%.1f" $(echo "$sinr / 10" | bc -l 2>/dev/null))
+                
+                [ -n "$rssi" ] && rssi_actual=$(printf "%.1f" $(echo "$rssi / 10" | bc -l 2>/dev/null))
 
                 network_mode="LTE Mode"
                 lte_mcc="$mcc"
@@ -647,8 +678,9 @@ cell_info()
                     slot=$(get_slot "$slot_num")
                 fi
 
-                [ -n "$rscp" ] && rscp_actual=$(awk "BEGIN { printf \"%.1f\", $rscp/10 }")
-                [ -n "$ecio" ] && ecio_actual=$(awk "BEGIN { printf \"%.1f\", $ecio/10 }")
+                [ -n "$rscp" ] && rscp_actual=$(printf "%.1f" $(echo "$rscp / 10" | bc -l 2>/dev/null))
+                
+                [ -n "$ecio" ] && ecio_actual=$(printf "%.1f" $(echo "$ecio / 10" | bc -l 2>/dev/null))
 
                 network_mode="WCDMA Mode"
                 wcdma_mcc="$mcc"
@@ -679,23 +711,16 @@ cell_info()
         
         case $network_mode in
             "NR5G-SA Mode")
-                add_plain_info_entry "MCC" "$nr_mcc" "Mobile Country Code"
-                add_plain_info_entry "MNC" "$nr_mnc" "Mobile Network Code"
+                add_plain_info_entry "MCC" "$mcc" "Mobile Country Code"
+                add_plain_info_entry "MNC" "$mnc" "Mobile Network Code"
                 add_plain_info_entry "Cell ID" "$nr_cell_id" "Cell ID"
                 add_plain_info_entry "Physical Cell ID" "$nr_physical_cell_id" "Physical Cell ID"
                 add_plain_info_entry "ARFCN" "$nr_arfcn" "Absolute Radio-Frequency Channel Number"
                 add_plain_info_entry "Band" "$nr_band" "Band"
-                add_bar_info_entry "SS-RSRP" "$nr_rsrp" "Reference Signal Received Power (SS)" -187 -29 dBm
-                add_bar_info_entry "SS-RSRQ" "$nr_rsrq" "Reference Signal Received Quality (SS)" -43 20 dBm
-                add_bar_info_entry "SS-SINR" "$nr_sinr" "Signal to Interference plus Noise Ratio (SS)" -23 40 dB
-                
-                if [ -n "$csi_rsrp" ]; then
-                    add_bar_info_entry "CSI-RSRP" "$csi_rsrp_actual" "Reference Signal Received Power (CSI)" -187 -29 dBm
-                    add_bar_info_entry "CSI-RSRQ" "$csi_rsrq_actual" "Reference Signal Received Quality (CSI)" -43 20 dBm
-                    add_bar_info_entry "CSI-SINR" "$csi_sinr_actual" "Signal to Interference plus Noise Ratio (CSI)" -23 40 dB
-                fi
+                add_bar_info_entry "RSRP" "$nr_rsrp" "Reference Signal Received Power" -140 -44 dBm
+                add_bar_info_entry "RSRQ" "$nr_rsrq" "Reference Signal Received Quality" -19.5 -3 dB
+                add_bar_info_entry "SINR" "$nr_sinr" "Signal to Interference plus Noise Ratio" 0 30 dB
                 ;;
-                
             "LTE Mode")
                 add_plain_info_entry "MCC" "$lte_mcc" "Mobile Country Code"
                 add_plain_info_entry "MNC" "$lte_mnc" "Mobile Network Code"
@@ -707,9 +732,9 @@ cell_info()
                 add_plain_info_entry "RX Power" "$lte_rx_power" "RX Power (dBm)"
                 add_plain_info_entry "TX Power" "$lte_tx_power" "TX Power (dBm)"
                 add_bar_info_entry "RSRP" "$lte_rsrp" "Reference Signal Received Power" -140 -44 dBm
-                add_bar_info_entry "RSRQ" "$lte_rsrq" "Reference Signal Received Quality" -20 20 dBm 
-                add_bar_info_entry "SINR" "$lte_sinr" "Signal to Interference plus Noise Ratio" -23 40 dB
-                add_bar_info_entry "RSSI" "$lte_rssi" "Received Signal Strength Indicator" -140 -44 dBm
+                add_bar_info_entry "RSRQ" "$lte_rsrq" "Reference Signal Received Quality" -19.5 -3 dB
+                add_bar_info_entry "SINR" "$lte_sinr" "Signal to Interference plus Noise Ratio" 0 30 dB
+                add_bar_info_entry "RSSI" "$lte_rssi" "Received Signal Strength Indicator" -120 -20 dBm
                 
                 if [ -n "$lte_cql" ]; then
                     add_plain_info_entry "CQI" "$lte_cql" "Channel Quality Indicator"

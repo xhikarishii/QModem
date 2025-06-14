@@ -114,7 +114,7 @@ update_config()
     config_get en_bridge $modem_config en_bridge
     config_get do_not_add_dns $modem_config do_not_add_dns
     config_get dns_list $modem_config dns_list
-    [ "$manufacturer" == "fibocom" ] && [ "$platform" == "mediatek" ] && config_get mtk_check $modem_config mtk_check
+    config_get connect_check $modem_config connect_check
     config_get global_dial main enable_dial
     # config_get ethernet_5g u$modem_config ethernet 转往口获取命令更新，待测试
     config_foreach get_associate_ethernet_by_path modem-slot
@@ -266,7 +266,7 @@ check_ip()
             "neoway")
                 case $platform in
                     "unisoc")
-                        check_ip_command='AT$MYUSBNETACT?'
+                        check_ip_command="AT+CGPADDR=1"
                         ;;
                 esac
                 ;;
@@ -280,9 +280,6 @@ check_ip()
             local config=$(umbim -d $mbim_port config)
             ipaddr=$(echo "$config" | grep "ipv4address:" | awk '{print $2}' | cut -d'/' -f1)
             ipaddr="$ipaddr $(echo "$config" | grep "ipv6address:" | awk '{print $2}' | cut -d'/' -f1)"
-        elif [ "$manufacturer" = "neoway" ]; then
-            # $MYURCACT: 0,1,"10.92.220.73"
-            ipaddr=$(at "$at_port" "$check_ip_command" | grep '$MYUSBNETACT:')
         else
             ipaddr=$(at "$at_port" "$check_ip_command" | grep +CGPADDR:)
         fi
@@ -315,10 +312,10 @@ check_ip()
         fi
 }
 
-check_mtk_connection()
+check_connection()
 {
     [ "$connection_status" = "0" ] || [ "$connection_status" = "-1" ] && return 0
-    if [ "$mtk" -eq 1 ] && [ -n "$ipv4" ] && [ -n "$modem_netcard" ]; then
+    if [ -n "$ipv4" ] && [ -n "$modem_netcard" ]; then
         for i in 1 2; do
             if ping -I "$modem_netcard" -w 1 1.1.1.1 >/dev/null 2>&1 || 
                ping -I "$modem_netcard" -w 2 8.8.8.8 >/dev/null 2>&1; then
@@ -331,18 +328,9 @@ check_mtk_connection()
             sleep 1
         done
         local ifup_time=$(ubus call network.interface.$interface6_name status 2>/dev/null | jsonfilter -e '@.uptime' 2>/dev/null || echo 0)
-        if [ -n "$ifup_time" ] && [ "$ifup_time" -gt 5 ] && [ "$pdp_type" = "ipv4v6" ] && [ -n "$ipv6" ]; then
-            for i in 1 2; do
-                if ping6 -I "$modem_netcard" -w 1 2400:3200::1 >/dev/null 2>&1 || 
-                   ping6 -I "$modem_netcard" -w 2 2001:4860:4860::8888 >/dev/null 2>&1; then
-                    break
-                fi
-                if [ $i -eq 2 ]; then
-                    m_debug "IPv6 connection test failed, restarting IPv6 interface"
-                    [ -n "$interface6_name" ] && ifdown "$interface6_name" && sleep 2 && ifup "$interface6_name"
-                fi
-                sleep 1
-            done
+        if [ "$ifup_time" -gt 5 ] && [ "$pdp_type" = "ipv4v6" ]; then
+            rdisc6 $origin_device &
+            ndisc6 fe80::1 $origin_device &
         fi
     fi
     return 0
@@ -660,14 +648,15 @@ ecm_hang()
             at_command="AT^NDISDUP=0,0"
             ;;
         "neoway")
+            delay=3
             at_command='AT$MYUSBNETACT=0,0'
             ;;
         *)
             at_command="ATI"
             ;;
     esac
-
     fastat "${at_port}" "${at_command}"
+    sleep "$delay"
 }
 
 hang()
@@ -819,7 +808,7 @@ at_dial()
                     cgdcont_command="AT+CGDCONT=1,\"$pdp_type\",\"$apn\""
                     ;;
                 "mediatek")
-                    mtk=1
+                    delay=3
                     if [ "$apn" = "auto" ];then
                         apn="cbnet"
                     fi
@@ -859,17 +848,13 @@ at_dial()
                     at_command='AT$MYUSBNETACT=0,1'
                     cgdcont_command="AT+CGDCONT=1,\"$pdp_type\",\"$apn\""
                     ;;
-                "unisoc")
-                    at_command=""
-                    cgdcont_command="AT+CGDCONT=1,\"$pdp_type\",\"$apn\""
-                    ;;
             esac
             ;;
     esac
     m_debug "dialing vendor:$manufacturer;platform:$platform; $cgdcont_command ; $at_command"
     at "${at_port}" "${cgdcont_command}"
     fastat "$at_port" "$at_command"
-    [ "$mtk" -eq 1 ] && sleep 2
+    sleep "$delay"
     if [ "$driver" = "mtk_pcie" ];then
         fastat "$at_port" "AT+CGACT=0,3"
         mbim_port=$(echo "$at_port" | sed 's/at/mbim/g')
@@ -1058,7 +1043,7 @@ at_dial_monitor()
                     ipv4_cache=$ipv4
                     ipv6_cache=$ipv6
                 fi
-                [ "$mtk_check" -eq 1 ] && { sleep 5; check_mtk_connection || { fastat "$at_port" "AT+CGACT=0,3" && at_dial; }; } || sleep 15
+                [ "$connect_check" -eq 1 ] && { sleep 5; check_connection || { hang && at_dial; }; } || sleep 15
                 ;;
         esac
         check_logfile_line

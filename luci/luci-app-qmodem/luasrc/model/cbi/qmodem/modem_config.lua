@@ -73,10 +73,10 @@ end
 soft_reboot = s:option(Flag, "soft_reboot", translate("Soft Reboot"))
 soft_reboot.default = "0"
 
--- MTK Check
-mtk_check = s:option(Flag, "mtk_check", translate("MTK V4/V6 Check"))
-mtk_check.description = translate("Only for Fibocom MTK modem.")
-mtk_check.default = "0"
+-- Connect Check
+connect_check = s:option(Flag, "connect_check", translate("V4/V6 Connect Check"))
+connect_check.description = translate("Only for AT dial modem.")
+connect_check.default = "0"
 
 -- PDP Context Index
 define_connect = s:option(Value, "define_connect", translate("PDP Context Index"))
