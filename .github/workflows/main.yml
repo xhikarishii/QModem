@@ -55,21 +55,11 @@ jobs:
         with:
           path: 'qmodem'
 
-      - name: Update Modem_support_list
+      - name: Generate Release Note
         id: update_modem_support_list
         run: |
           cd qmodem
           python3 ./scripts/update_support_list.py temp_support_list ./luci/luci-app-qmodem/root/usr/share/qmodem/modem_support.json
-          is_diff=$(diff ./temp_support_list.md ./docs/support_list.md > /dev/null 2>&1 && echo 0 || echo 1)
-          echo "is_diff=${is_diff}" >> $GITHUB_ENV
-          if [[ ${is_pr} == 0 ]] && [[ ${is_diff} == 1 ]]; then
-            mv temp_support_list.md ./docs/support_list.md
-            git config --global user.name "GitHub Action"
-            git config --global user.email "github-action@users.noreply.github.com"
-            git add ./docs/support_list.md
-            git commit -m "Update support list"
-            git push origin ${{ env.branch_name }}
-          fi
           mv temp_support_list_release_notes.md ./release_note.md
       
       - name: Upload Release Note
