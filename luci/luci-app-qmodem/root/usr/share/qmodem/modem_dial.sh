@@ -656,7 +656,7 @@ ecm_hang()
             ;;
     esac
     fastat "${at_port}" "${at_command}"
-    sleep "$delay"
+    [ -n "$delay" ] && sleep "$delay"
 }
 
 hang()
@@ -854,7 +854,7 @@ at_dial()
     m_debug "dialing vendor:$manufacturer;platform:$platform; $cgdcont_command ; $at_command"
     at "${at_port}" "${cgdcont_command}"
     fastat "$at_port" "$at_command"
-    sleep "$delay"
+    [ -n "$delay" ] && sleep "$delay"
     if [ "$driver" = "mtk_pcie" ];then
         fastat "$at_port" "AT+CGACT=0,3"
         mbim_port=$(echo "$at_port" | sed 's/at/mbim/g')
