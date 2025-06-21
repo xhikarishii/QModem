@@ -19,8 +19,6 @@ LUCI_DEPENDS:=+luci-compat \
 		+kmod-usb-net-cdc-mbim \
 		+kmod-usb-net-rndis \
 		+kmod-usb-net-cdc-ncm +kmod-usb-net-huawei-cdc-ncm \
-		+PACKAGE_luci-app-qmodem_INCLUDE_nss-qmi-wwan:quectel-qmi-wwan \
-		+PACKAGE_luci-app-qmodem_INCLUDE_nss-rmnet:rmnet-nss \
 		+PACKAGE_luci-app-qmodem_INCLUDE_generic-qmi-wwan:kmod-usb-net-qmi-wwan \
 		+PACKAGE_luci-app-qmodem_INCLUDE_vendor-qmi-wwan:kmod-qmi_wwan_q \
 		+PACKAGE_luci-app-qmodem_INCLUDE_vendor-qmi-wwan:kmod-qmi_wwan_f \
@@ -33,7 +31,7 @@ LUCI_DEPENDS:=+luci-compat \
 		+PACKAGE_luci-app-qmodem_INCLUDE_ADD_QFIREHOSE_SUPPORT:qfirehose \
 		+PACKAGE_luci-app-qmodem_USE_TOM_CUSTOMIZED_QUECTEL_CM:quectel-CM-5G-M \
 		+PACKAGE_luci-app-qmodem_USING_QWRT_QUECTEL_CM_5G:quectel-CM-5G \
-		+PACKAGE_luci-app-qmodem_USING_NSS_QUECTEL_CM:quectel-cm \
+		+PACKAGE_luci-app-qmodem_USING_NORMAL_QUECTEL_CM:quectel-cm \
 		+tom_modem +terminfo \
 		+jq +bc\
 		+coreutils +coreutils-stat \
