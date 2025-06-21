@@ -698,7 +698,7 @@ mhi_dial()
 }
 qmi_dial()
 {
-    cmd_line="quectel-CM"
+    cmd_line="quectel-cm"
     [ -e "/usr/bin/quectel-CM-M" ] && cmd_line="quectel-CM-M"
     case $pdp_type in
         "ip") cmd_line="$cmd_line -4" ;;
