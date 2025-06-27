@@ -70,6 +70,11 @@ Model | Platform | USB  | PCIe
 --- | --- | --- | ---
 em9190 | qualcomm |✔ usb(mbim,rmnet) | ✔ pcie(mbim,rmnet)
 
+# telit
+Model | Platform | USB  | PCIe 
+--- | --- | --- | ---
+fn990a40 | qualcomm |✔ usb(mbim,rndis,qmi,ecm) | ✔ pcie(mbim,qmi)
+
 # simcom
 Model | Platform | USB  | PCIe 
 --- | --- | --- | ---
