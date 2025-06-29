@@ -1,3 +1,22 @@
+# 舔狗计划
+最近刚追到高中时期的白月光✨，脑子里全是和妹妹聊天的剧本📖。
+工作基本停摆了，游戏也卸了，连熬夜刷剧都不敢了，怕眼圈太黑影响形象👀。
+等我谈稳定了👫，再说要不要恢复正常更新！
+
+为了追🌸白月光🌸，MD，硬生生变成了情感专家、聊天达人、朋友圈文案大师📱！
+
+无知时尬聊白月光😅🙇‍♂️
+成熟时读懂白月光🤔🙇‍♂️
+恋爱时融化白月光🥰🙇‍♂️
+
+白月光助我！喝咩！👋青春永驻！
+任何尴尬：终将被绝妙话术化解🧙‍♂️！
+
+因此我[FuJr](https://github.com/FUjr)将暂停更新一段时间📵，所有新内容暂时停更，项目进度也会放缓。
+等我谈稳定了👫，再回来和大家分享我的舔狗成功学📖！
+感谢理解，祝大家都能追到自己的白月光✨！
+白月光，启动！
+
 # QModem
 [![Auto compile with OpenWrt SDK](https://github.com/FUjr/modem_feeds/actions/workflows/main.yml/badge.svg)](https://github.com/FUjr/modem_feeds/actions/workflows/main.yml)
 
