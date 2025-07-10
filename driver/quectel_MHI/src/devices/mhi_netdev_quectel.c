@@ -208,7 +208,7 @@ static void qmap_hex_dump(const char *tag, unsigned char *data, unsigned len) {
 
 #define MBIM_MUX_ID_SDX7X	112	//sdx7x is 112-126, others is 0-14
 
-static uint __read_mostly mhi_mbim_enabled = 1;
+static uint __read_mostly mhi_mbim_enabled = 0;
 module_param(mhi_mbim_enabled, uint, S_IRUGO);
 int mhi_netdev_mbin_enabled(void) { return mhi_mbim_enabled; }
 
